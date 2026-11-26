@@ -6,53 +6,30 @@
 <title>校园失物招领</title>
 <meta name="description" content="校园失物招领：登录后发布失物信息，输关键词马上找到。">
 <style>
-  :root{
-    --bg:#f5f7fa; --card:#fff; --ink:#1f2937; --muted:#6b7280;
-    --line:#e5e7eb; --brand:#2563eb; --lost:#ef4444; --found:#10b981;
-  }
+  :root{--bg:#f5f7fa;--card:#fff;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--brand:#2563eb;--lost:#ef4444;--found:#10b981}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}
-  body{
-    margin:0;background:var(--bg);color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
-    touch-action:manipulation;
-  }
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;touch-action:manipulation}
   .wrap{max-width:680px;margin:0 auto;padding:16px 14px 70px}
   h1{font-size:22px;margin:4px 0 6px}
   .head{display:flex;align-items:baseline;gap:8px}
   .stat{font-size:12px;color:var(--muted);margin-left:auto}
   .searchbox{position:relative;margin-bottom:8px}
-  #q{
-    width:100%;padding:13px 15px;font-size:15px;border:2px solid var(--line);
-    border-radius:14px;outline:none;background:#fff;transition:.15s;
-  }
+  #q{width:100%;padding:13px 15px;font-size:15px;border:2px solid var(--line);border-radius:14px;outline:none;background:#fff;transition:.15s}
   #q:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(37,99,235,.10)}
   .hint{display:block;margin:6px 2px 0;font-size:12px;color:var(--brand);min-height:16px}
   .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
   .chips::-webkit-scrollbar{display:none}
-  .chip{
-    flex:0 0 auto;padding:8px 14px;border:1px solid var(--line);border-radius:999px;
-    background:#fff;color:#374151;font-size:13px;cursor:pointer;white-space:nowrap;font-family:inherit;
-  }
+  .chip{flex:0 0 auto;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:#fff;color:#374151;font-size:13px;cursor:pointer;white-space:nowrap;font-family:inherit}
   .chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
   .chip.sm{padding:6px 12px;font-size:12px}
-  button.primary{
-    width:100%;padding:13px;border:0;border-radius:14px;background:var(--brand);
-    color:#fff;font-size:15px;font-weight:600;cursor:pointer;margin:6px 0 16px;font-family:inherit;
-  }
-  button.ghost{
-    width:100%;padding:12px;border:1px solid var(--line);border-radius:14px;
-    background:#fff;color:#374151;font-size:14px;cursor:pointer;font-family:inherit;
-  }
+  button.primary{width:100%;padding:13px;border:0;border-radius:14px;background:var(--brand);color:#fff;font-size:15px;font-weight:600;cursor:pointer;margin:6px 0 16px;font-family:inherit}
+  button.ghost{width:100%;padding:12px;border:1px solid var(--line);border-radius:14px;background:#fff;color:#374151;font-size:14px;cursor:pointer;font-family:inherit}
   .card{background:var(--card);border-radius:16px;padding:14px;box-shadow:0 1px 3px rgba(0,0,0,.06);margin-bottom:12px}
   .item.done{opacity:.6}
-  .item.old{opacity:.8}
   .item .top{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
   .tag{font-size:11px;padding:3px 8px;border-radius:8px;color:#fff}
-  .tag.lost{background:var(--lost)}
-  .tag.found{background:var(--found)}
-  .tag.ok{background:#9ca3af}
-  .tag.old{background:#f59e0b}
+  .tag.lost{background:var(--lost)}.tag.found{background:var(--found)}.tag.ok{background:#9ca3af}.tag.old{background:#f59e0b}
   .cat{font-size:11px;padding:3px 8px;border-radius:8px;background:#eef2ff;color:#4338ca}
   .item h3{margin:2px 0 6px;font-size:16px;line-height:1.4;word-break:break-word}
   .item .desc{margin:0 0 8px;font-size:13px;color:#4b5563;line-height:1.6;white-space:pre-wrap;word-break:break-word}
@@ -60,10 +37,7 @@
   .meta{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted);margin-bottom:10px}
   .acts{display:flex;align-items:center;gap:8px;border-top:1px solid var(--line);padding-top:10px;flex-wrap:wrap}
   .acts .time{font-size:11px;color:#9ca3af;margin-right:auto}
-  .acts button{
-    padding:7px 14px;font-size:12px;border:1px solid var(--line);border-radius:9px;
-    background:#fff;color:#374151;cursor:pointer;font-family:inherit;
-  }
+  .acts button{padding:7px 14px;font-size:12px;border:1px solid var(--line);border-radius:9px;background:#fff;color:#374151;cursor:pointer;font-family:inherit}
   .acts button.main{background:var(--brand);border-color:var(--brand);color:#fff}
   .acts button.danger{color:var(--lost);border-color:#fecaca;background:#fef2f2}
   .acts button.tiny{padding:5px 9px;font-size:11px;color:#9ca3af;border-color:#f3f4f6}
@@ -71,73 +45,49 @@
   .empty{text-align:center;color:var(--muted);font-size:14px;padding:50px 10px;line-height:1.7}
   .form .field{margin-bottom:12px}
   .form label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
-  .form input,.form select,.form textarea{
-    width:100%;padding:11px 12px;font-size:14px;border:1px solid var(--line);
-    border-radius:11px;outline:none;background:#fff;font-family:inherit;
-  }
+  .form input,.form select,.form textarea{width:100%;padding:11px 12px;font-size:14px;border:1px solid var(--line);border-radius:11px;outline:none;background:#fff;font-family:inherit}
   .form textarea{resize:vertical;min-height:76px}
   .form input:focus,.form select:focus,.form textarea:focus{border-color:var(--brand)}
   .row{display:flex;gap:10px}
   .row>*{flex:1;min-width:0}
   .row .field{margin-bottom:12px}
   .hide{display:none !important}
-  .toast{
-    position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);
-    background:rgba(17,24,39,.92);color:#fff;padding:11px 18px;border-radius:12px;
-    font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:99;max-width:88%;
-    text-align:center;
-  }
+  .toast{position:fixed;left:50%;bottom:34px;transform:translate(-50%,20px);background:rgba(17,24,39,.92);color:#fff;padding:11px 18px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:99;max-width:88%;text-align:center}
   .toast.show{opacity:1;transform:translate(-50%,0)}
   .tip{text-align:center;font-size:12px;color:#9ca3af;margin-top:18px}
-  .tip button{background:none;border:0;color:#9ca3af;text-decoration:underline;font-size:12px;cursor:pointer;font-family:inherit}
+  .tip button{background:none;border:0;color:#9ca3af;text-decoration:underline;font-size:12px;cursor:pointer;font-family:inherit;margin:0 6px}
   .admin-on .tip button{color:var(--brand);font-weight:600}
   .modal{position:fixed;inset:0;background:rgba(17,24,39,.45);z-index:80;display:flex;align-items:center;justify-content:center;padding:18px}
-  .modal-box{background:#fff;border-radius:18px;padding:18px;width:100%;max-width:400px}
+  .modal-box{background:#fff;border-radius:18px;padding:18px;width:100%;max-width:400px;max-height:88vh;display:flex;flex-direction:column}
   .modal-box h4{margin:0 0 6px;font-size:16px}
   .mSub{margin:0 0 12px;font-size:13px;color:#4b5563;line-height:1.6;white-space:pre-wrap}
-  .modal-box input{
-    width:100%;padding:11px 12px;font-size:14px;border:1px solid var(--line);
-    border-radius:11px;outline:none;margin-bottom:12px;font-family:inherit;
-  }
-  .contact-num{
-    font-size:17px;font-weight:600;text-align:center;padding:14px;background:#eff6ff;
-    border-radius:12px;color:#1d4ed8;word-break:break-all;margin-bottom:10px;
-  }
+  .modal-box input{width:100%;padding:11px 12px;font-size:14px;border:1px solid var(--line);border-radius:11px;outline:none;margin-bottom:12px;font-family:inherit}
+  .contact-num{font-size:17px;font-weight:600;text-align:center;padding:14px;background:#eff6ff;border-radius:12px;color:#1d4ed8;word-break:break-all;margin-bottom:10px}
+  .rep-list{overflow:auto;flex:1;margin-bottom:12px}
+  .rep-item{border-bottom:1px solid var(--line);padding:10px 0}
+  .rep-item b{font-size:14px}
+  .rep-item .rep-meta{font-size:12px;color:#6b7280;margin:4px 0 8px}
+  .rep-item button{padding:5px 10px;font-size:12px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;margin-right:6px;font-family:inherit}
+  .rep-item button.danger{color:var(--lost);border-color:#fecaca;background:#fef2f2}
   .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-  .auth-card{
-    background:#fff;border-radius:20px;padding:24px 20px;width:100%;max-width:390px;
-    box-shadow:0 8px 30px rgba(0,0,0,.08);
-  }
+  .auth-card{background:#fff;border-radius:20px;padding:24px 20px;width:100%;max-width:390px;box-shadow:0 8px 30px rgba(0,0,0,.08)}
   .auth-card h1{font-size:21px;margin:0 0 4px;text-align:center}
   .auth-sub{text-align:center;color:var(--muted);font-size:13px;margin:0 0 18px}
   .tabs{display:flex;background:#f3f4f6;border-radius:12px;padding:4px;margin-bottom:16px}
-  .tab{
-    flex:1;padding:9px;border:0;background:none;border-radius:9px;font-size:14px;
-    color:#6b7280;cursor:pointer;font-family:inherit;
-  }
+  .tab{flex:1;padding:9px;border:0;background:none;border-radius:9px;font-size:14px;color:#6b7280;cursor:pointer;font-family:inherit}
   .tab.on{background:#fff;color:var(--brand);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-  .auth-card input{
-    width:100%;padding:12px 13px;font-size:15px;border:1px solid var(--line);
-    border-radius:12px;outline:none;margin-bottom:10px;font-family:inherit;
-  }
+  .auth-card input{width:100%;padding:12px 13px;font-size:15px;border:1px solid var(--line);border-radius:12px;outline:none;margin-bottom:10px;font-family:inherit}
   .auth-card input:focus{border-color:var(--brand)}
   .nick-row{display:flex;gap:8px;margin-bottom:10px}
   .nick-row input{margin-bottom:0;background:#f9fafb;color:#374151}
-  .nick-row button{
-    flex:0 0 auto;padding:0 14px;border:1px solid var(--line);border-radius:12px;
-    background:#fff;font-size:13px;cursor:pointer;color:#374151;font-family:inherit;
-  }
-  .auth-tip{font-size:12px;color:#9ca3af;text-align:center;margin:10px 0 0;line-height:1.55}
-  .userbar{
-    display:flex;align-items:center;justify-content:space-between;background:#fff;
-    border-radius:12px;padding:9px 12px;margin:8px 0 14px;font-size:13px;
-    box-shadow:0 1px 2px rgba(0,0,0,.05);
-  }
-  .userbar button{
-    border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 10px;
-    font-size:12px;color:#6b7280;cursor:pointer;font-family:inherit;
-  }
+  .nick-row button{flex:0 0 auto;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:13px;cursor:pointer;color:#374151;font-family:inherit}
+  .auth-tip{font-size:12px;color:#9ca3af;text-align:center;margin:10px 0 0;line-height:1.7}
+  .auth-tip b{color:#374151}
+  .linkbtn{background:none;border:0;color:var(--brand);font-size:12px;cursor:pointer;text-decoration:underline;font-family:inherit;padding:0}
+  .userbar{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:12px;padding:9px 12px;margin:8px 0 14px;font-size:13px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+  .userbar button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 10px;font-size:12px;color:#6b7280;cursor:pointer;font-family:inherit}
   .owner{color:#9ca3af}
+  .sec-hint{font-size:11px;color:#9ca3af;margin:-6px 0 10px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -147,18 +97,16 @@
     <div class="auth-card">
       <h1>🎒 校园失物招领</h1>
       <p class="auth-sub">登录后即可发布和认领</p>
-
       <div class="tabs">
         <button class="tab on" data-tab="login" type="button">登录</button>
         <button class="tab" data-tab="reg" type="button">注册</button>
       </div>
-
       <form id="loginForm">
         <input name="account" placeholder="账号" autocapitalize="off" spellcheck="false">
         <input name="password" type="password" placeholder="密码">
         <button type="submit" class="primary" style="margin:6px 0 0">登录</button>
       </form>
-
+      <p class="auth-tip" id="loginTip">忘记密码？<button type="button" class="linkbtn" id="forgotBtn">点这里重置</button></p>
       <form id="regForm" class="hide">
         <input name="account" placeholder="账号（3-20 位字母 / 数字 / 下划线）" autocapitalize="off" spellcheck="false">
         <div class="nick-row">
@@ -166,6 +114,9 @@
           <button type="button" id="reroll">换一个</button>
         </div>
         <input name="password" type="password" placeholder="密码（至少 6 位）">
+        <input name="secq" maxlength="60" placeholder="密保问题（如：我小学班主任姓什么）">
+        <input name="seca" maxlength="40" placeholder="密保答案">
+        <p class="sec-hint">密保问题用来忘记密码时找回，答案不区分大小写，请记牢。</p>
         <button type="submit" class="primary" style="margin:6px 0 0">注册并登录</button>
         <p class="auth-tip">账号唯一，注册后别人不能再用；昵称随机生成。</p>
       </form>
@@ -179,26 +130,21 @@
       <h1>🎒 校园失物招领</h1>
       <span class="stat" id="stat"></span>
     </div>
-
     <div class="userbar">
       <span>👋 <b id="nickName">同学</b></span>
       <button id="logoutBtn" type="button">退出登录</button>
     </div>
-
     <div class="searchbox">
       <input id="q" type="text" placeholder="搜关键词：耳机 / 图书馆 / 校园卡" autocomplete="off">
       <span class="hint" id="hint"></span>
     </div>
-
     <div class="chips" id="typeChips">
       <button class="chip on" data-type="">全部</button>
       <button class="chip" data-type="lost">我丢了</button>
       <button class="chip" data-type="found">我捡到</button>
       <button class="chip" id="mineBtn">我的发布</button>
     </div>
-
     <div class="chips" id="catChips"></div>
-
     <button class="primary" id="toggleForm">＋ 发布信息</button>
 
     <form class="card form hide" id="form">
@@ -231,7 +177,6 @@
         <label>详细描述</label>
         <textarea name="desc" maxlength="1000" placeholder="颜色、牌子、有什么特征…"></textarea>
       </div>
-
       <div id="claimFields" class="hide">
         <div class="field">
           <label>认领问题（只有失主答得出来）</label>
@@ -242,7 +187,6 @@
           <input name="a" maxlength="40" placeholder="如：小黄鸭">
         </div>
       </div>
-
       <div class="field">
         <label>联系方式（验证通过后才会显示）</label>
         <input name="contact" maxlength="80" placeholder="微信 / 手机号 / QQ">
@@ -259,7 +203,10 @@
 
     <div id="list"></div>
     <p class="tip" id="count"></p>
-    <p class="tip"><button id="adminBtn" type="button">管理入口</button></p>
+    <p class="tip">
+      <button id="adminBtn" type="button">管理入口</button>
+      <button id="reportsBtn" type="button" class="hide">举报记录</button>
+    </p>
   </div>
 </div>
 
@@ -277,6 +224,32 @@
   </div>
 </div>
 
+<div class="modal hide" id="repModal">
+  <div class="modal-box">
+    <h4>举报记录</h4>
+    <p class="mSub">这里是被举报过的信息，可以删除或忽略</p>
+    <div class="rep-list" id="repList"></div>
+    <button class="ghost" id="repClose">关闭</button>
+  </div>
+</div>
+
+<div class="modal hide" id="forgotModal">
+  <div class="modal-box">
+    <h4>重置密码</h4>
+    <p class="mSub" id="fgSub">输入账号，回答密保问题，就能设置新密码</p>
+    <input type="text" id="fgAccount" placeholder="账号" autocapitalize="off" spellcheck="false">
+    <div id="fgStep2" class="hide">
+      <div class="contact-num" id="fgQuestion" style="font-size:14px;font-weight:500"></div>
+      <input type="text" id="fgAnswer" placeholder="密保答案">
+      <input type="password" id="fgNewPass" placeholder="新密码（至少 6 位）">
+    </div>
+    <div class="row">
+      <button class="primary" id="fgOk" style="margin:0">下一步</button>
+      <button class="ghost" id="fgCancel">关闭</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -289,7 +262,6 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const ACCOUNT_DOMAIN = '@campus-lost.app';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/* ===== 手机防缩放 ===== */
 document.addEventListener('gesturestart', function (e) { e.preventDefault(); }, { passive: false });
 document.addEventListener('gesturechange', function (e) { e.preventDefault(); }, { passive: false });
 document.addEventListener('gestureend', function (e) { e.preventDefault(); }, { passive: false });
@@ -321,6 +293,8 @@ let curTokens = [];
 let curClaimId = null;
 let modalMode = 'claim';
 let adminAuth = null;
+let editingId = null;
+let fgStep = 1;
 try { adminAuth = JSON.parse(sessionStorage.getItem('admin_auth') || 'null'); } catch (e) { adminAuth = null; }
 
 const $ = (s) => document.querySelector(s);
@@ -330,9 +304,7 @@ const hintEl = $('#hint');
 const form = $('#form');
 
 function esc(s) {
-  return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[c]));
+  return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 function hl(s) {
   let out = esc(s);
@@ -393,9 +365,7 @@ function checkRate() {
   try { list = JSON.parse(localStorage.getItem('recent_posts') || '[]'); } catch (e) { list = []; }
   const now = Date.now();
   list = list.filter((t) => now - t < POST_WINDOW);
-  if (list.length >= POST_LIMIT) {
-    throw new Error('你 10 分钟内已经发了 ' + POST_LIMIT + ' 条，歇一会儿再发');
-  }
+  if (list.length >= POST_LIMIT) throw new Error('你 10 分钟内已经发了 ' + POST_LIMIT + ' 条，歇一会儿再发');
 }
 function markPosted() {
   let list = [];
@@ -403,18 +373,29 @@ function markPosted() {
   list.push(Date.now());
   localStorage.setItem('recent_posts', JSON.stringify(list));
 }
-
+function storagePath(url) {
+  if (!url) return '';
+  const marker = '/item-photos/';
+  const i = url.indexOf(marker);
+  if (i < 0) return '';
+  return decodeURIComponent(url.slice(i + marker.length).split('?')[0]);
+}
+async function removeImage(url) {
+  const p = storagePath(url);
+  if (!p) return;
+  try { await db.storage.from('item-photos').remove([p]); } catch (e) {}
+}
 function clearAdmin() {
   adminAuth = null;
   try { sessionStorage.removeItem('admin_auth'); } catch (e) {}
   document.body.classList.remove('admin-on');
-  const btn = $('#adminBtn');
-  if (btn) btn.textContent = '管理入口';
+  if ($('#adminBtn')) $('#adminBtn').textContent = '管理入口';
+  if ($('#reportsBtn')) $('#reportsBtn').classList.add('hide');
+  render();
 }
 
 const ADJ = ['安静的','热心的','勤劳的','快乐的','认真的','勇敢的','细心的','低调的','闪亮的','温柔的','爱喝奶茶的','爱睡觉的'];
 const NOUN = ['柚子','橘子','白杨','小狗','海豚','蘑菇','云朵','星星','风筝','咖啡','汤圆','汽水'];
-
 function randomNick() {
   const a = ADJ[Math.floor(Math.random() * ADJ.length)];
   const n = NOUN[Math.floor(Math.random() * NOUN.length)];
@@ -426,11 +407,8 @@ function showAuth() {
   items = [];
 }
 function enterApp(user) {
-  if (currentUser && currentUser.id === user.id &&
-      !$('#appView').classList.contains('hide')) return;
-
+  if (currentUser && currentUser.id === user.id && !$('#appView').classList.contains('hide')) return;
   if (adminAuth && adminAuth.uid !== user.id) clearAdmin();
-
   currentUser = user;
   $('#authView').classList.add('hide');
   $('#appView').classList.remove('hide');
@@ -445,6 +423,7 @@ document.querySelectorAll('.tab').forEach((t) => {
     const isLogin = t.dataset.tab === 'login';
     document.querySelectorAll('.tab').forEach((x) => x.classList.toggle('on', x === t));
     $('#loginForm').classList.toggle('hide', !isLogin);
+    $('#loginTip').classList.toggle('hide', !isLogin);
     $('#regForm').classList.toggle('hide', isLogin);
     if (!isLogin) {
       const n = $('#regForm').querySelector('[name=nickname]');
@@ -452,10 +431,7 @@ document.querySelectorAll('.tab').forEach((t) => {
     }
   });
 });
-
-$('#reroll').addEventListener('click', () => {
-  $('#regForm').querySelector('[name=nickname]').value = randomNick();
-});
+$('#reroll').addEventListener('click', () => { $('#regForm').querySelector('[name=nickname]').value = randomNick(); });
 
 $('#loginForm').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -464,23 +440,13 @@ $('#loginForm').addEventListener('submit', async (e) => {
   const account = f.account.value.trim().toLowerCase();
   const password = f.password.value;
   if (!account || !password) return toast('请填账号和密码');
-  btn.disabled = true;
-  btn.textContent = '登录中…';
+  btn.disabled = true; btn.textContent = '登录中…';
   try {
-    const { error } = await db.auth.signInWithPassword({
-      email: account + ACCOUNT_DOMAIN,
-      password
-    });
-    if (error) {
-      throw new Error(/invalid|credential/i.test(error.message) ? '账号或密码不对' : error.message);
-    }
+    const { error } = await db.auth.signInWithPassword({ email: account + ACCOUNT_DOMAIN, password });
+    if (error) throw new Error(/invalid|credential/i.test(error.message) ? '账号或密码不对' : error.message);
     f.reset();
-  } catch (err) {
-    toast(err.message || '登录失败');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '登录';
-  }
+  } catch (err) { toast(err.message || '登录失败'); }
+  finally { btn.disabled = false; btn.textContent = '登录'; }
 });
 
 $('#regForm').addEventListener('submit', async (e) => {
@@ -490,39 +456,35 @@ $('#regForm').addEventListener('submit', async (e) => {
   const account = f.account.value.trim().toLowerCase();
   const password = f.password.value;
   const nickname = f.nickname.value.trim() || randomNick();
+  const secq = f.secq.value.trim();
+  const seca = f.seca.value.trim();
 
   if (!/^[a-z0-9_]{3,20}$/.test(account)) return toast('账号只能用 3-20 位字母、数字、下划线');
   if (password.length < 6) return toast('密码至少 6 位');
+  if (!secq || !seca) return toast('请填写密保问题和答案');
 
-  btn.disabled = true;
-  btn.textContent = '注册中…';
+  btn.disabled = true; btn.textContent = '注册中…';
   try {
     const { data, error } = await db.auth.signUp({
-      email: account + ACCOUNT_DOMAIN,
-      password,
+      email: account + ACCOUNT_DOMAIN, password,
       options: { data: { nickname, account } }
     });
-
     if (error) {
-      if (/already|registered|exists/i.test(error.message)) {
-        throw new Error('这个账号已经被注册了，换一个吧');
-      }
+      if (/already|registered|exists/i.test(error.message)) throw new Error('这个账号已经被注册了，换一个吧');
       throw new Error(error.message);
     }
     if (data.user && (!data.user.identities || data.user.identities.length === 0) && !data.session) {
       throw new Error('这个账号已经被注册了，换一个吧');
     }
-    if (!data.session) {
-      throw new Error('注册成功但需要邮箱验证。请先在 Supabase 关闭 Confirm email 再来试。');
-    }
+    if (!data.session) throw new Error('注册成功但需要邮箱验证。请先在 Supabase 关闭 Confirm email 再来试。');
+
+    const { error: qaErr } = await db.rpc('set_security_qa', { p_question: secq, p_answer: seca });
+    if (qaErr) throw new Error('账号已创建，但密保设置失败：' + qaErr.message);
+
     toast('注册成功，欢迎你 🎉');
     f.reset();
-  } catch (err) {
-    toast(err.message || '注册失败');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '注册并登录';
-  }
+  } catch (err) { toast(err.message || '注册失败'); }
+  finally { btn.disabled = false; btn.textContent = '注册并登录'; }
 });
 
 $('#logoutBtn').addEventListener('click', async () => {
@@ -535,20 +497,68 @@ $('#logoutBtn').addEventListener('click', async () => {
   try {
     const { data } = await db.auth.getSession();
     if (data.session) enterApp(data.session.user);
-  } catch (e) { /* 忽略 */ }
-
+  } catch (e) {}
   db.auth.onAuthStateChange((evt, session) => {
     if (!session) { currentUser = null; clearAdmin(); showAuth(); return; }
     enterApp(session.user);
   });
 })();
 
+/* ---------- 忘记密码 ---------- */
+function resetForgot() {
+  fgStep = 1;
+  $('#fgAccount').value = '';
+  $('#fgStep2').classList.add('hide');
+  $('#fgOk').textContent = '下一步';
+  $('#fgSub').textContent = '输入账号，回答密保问题，就能设置新密码';
+}
+$('#forgotBtn').addEventListener('click', () => {
+  resetForgot();
+  $('#forgotModal').classList.remove('hide');
+  setTimeout(() => $('#fgAccount').focus(), 100);
+});
+$('#fgCancel').addEventListener('click', () => $('#forgotModal').classList.add('hide'));
+$('#forgotModal').addEventListener('click', (e) => { if (e.target.id === 'forgotModal') $('#forgotModal').classList.add('hide'); });
+
+$('#fgOk').addEventListener('click', async () => {
+  const acc = $('#fgAccount').value.trim().toLowerCase();
+  if (!acc) return toast('请输入账号');
+  const btn = $('#fgOk');
+  btn.disabled = true;
+  try {
+    if (fgStep === 1) {
+      const { data, error } = await db.rpc('get_security_question', { p_account: acc });
+      if (error) throw error;
+      if (!data) throw new Error('这个账号没有设置密保问题，请联系管理员 15528827382');
+      $('#fgQuestion').textContent = '密保问题：' + data;
+      $('#fgStep2').classList.remove('hide');
+      $('#fgSub').textContent = '回答下面的问题，并设置新密码';
+      btn.textContent = '重置密码';
+      fgStep = 2;
+    } else {
+      const answer = $('#fgAnswer').value.trim();
+      const np = $('#fgNewPass').value;
+      if (!answer) throw new Error('请输入密保答案');
+      if (np.length < 6) throw new Error('新密码至少 6 位');
+      const { data, error } = await db.rpc('reset_password_by_security', {
+        p_account: acc, p_answer: answer, p_new_password: np
+      });
+      if (error) throw error;
+      if (!data || !data.ok) throw new Error((data && data.msg) || '重置失败');
+      toast('密码已重置，请用新密码登录');
+      $('#forgotModal').classList.add('hide');
+      resetForgot();
+    }
+  } catch (err) { toast(err.message || '操作失败'); }
+  finally { btn.disabled = false; }
+});
+
+/* ---------- 渲染 ---------- */
 function renderCats() {
   const all = ['全部分类', ...CATEGORIES];
   $('#catChips').innerHTML = all.map((c) => {
     const val = c === '全部分类' ? '' : c;
-    return '<button class="chip sm ' + (catFilter === val ? 'on' : '') +
-           '" data-cat="' + esc(val) + '">' + esc(c) + '</button>';
+    return '<button class="chip sm ' + (catFilter === val ? 'on' : '') + '" data-cat="' + esc(val) + '">' + esc(c) + '</button>';
   }).join('');
 }
 
@@ -556,44 +566,32 @@ function cardHtml(it) {
   const mine = it.isMine;
   const done = it.status === 'done';
   const old = !done && (Date.now() - it.createdAt) > OLD_DAYS * 86400000;
-  const tag = it.type === 'found'
-    ? '<span class="tag found">拾获</span>'
-    : '<span class="tag lost">丢失</span>';
-
+  const tag = it.type === 'found' ? '<span class="tag found">拾获</span>' : '<span class="tag lost">丢失</span>';
   let btns = '';
   if (mine) {
     btns = '<button data-act="' + (done ? 'open' : 'done') + '" data-id="' + it.id + '">'
              + (done ? '重新开启' : '✓ 已处理完') + '</button>'
+         + '<button data-act="edit" data-id="' + it.id + '">编辑</button>'
          + '<button class="danger" data-act="del" data-id="' + it.id + '">删除</button>';
   } else {
     btns = '<button class="main" data-act="claim" data-id="' + it.id + '">'
              + (it.needsAnswer ? '我要认领' : '看联系方式') + '</button>'
          + '<button class="tiny" data-act="report" data-id="' + it.id + '">举报</button>';
   }
-  if (adminAuth) {
-    btns += '<button class="danger" data-act="adm_del" data-id="' + it.id + '">管理员删除</button>';
-  }
+  if (adminAuth) btns += '<button class="danger" data-act="adm_del" data-id="' + it.id + '">管理员删除</button>';
 
   return '<article class="card item ' + (done ? 'done' : '') + (old ? ' old' : '') + '">'
-    + '<div class="top">' + tag
-    + '<span class="cat">' + esc(it.category) + '</span>'
+    + '<div class="top">' + tag + '<span class="cat">' + esc(it.category) + '</span>'
     + (done ? '<span class="tag ok">已完成</span>' : '')
     + (old ? '<span class="tag old">超过 ' + OLD_DAYS + ' 天</span>' : '')
-    + '</div>'
-    + '<h3>' + hl(it.title) + '</h3>'
+    + '</div><h3>' + hl(it.title) + '</h3>'
     + (it.image ? '<img src="' + esc(it.image) + '" alt="物品照片" loading="lazy">' : '')
     + (it.desc ? '<p class="desc">' + hl(it.desc) + '</p>' : '')
-    + '<div class="meta">'
-    + '<span class="owner">👤 ' + esc(it.ownerName || '同学') + '</span>'
+    + '<div class="meta"><span class="owner">👤 ' + esc(it.ownerName || '同学') + '</span>'
     + (it.place ? '<span>📍 ' + hl(it.place) + '</span>' : '')
     + (it.time ? '<span>🗓 ' + esc(it.time) + '</span>' : '')
-    + '<span>🔒 联系方式需验证</span>'
-    + '</div>'
-    + '<div class="acts">'
-    + '<span class="time">' + timeAgo(it.createdAt) + '</span>'
-    + btns
-    + '</div>'
-    + '</article>';
+    + '<span>🔒 联系方式需验证</span></div>'
+    + '<div class="acts"><span class="time">' + timeAgo(it.createdAt) + '</span>' + btns + '</div></article>';
 }
 
 function render() {
@@ -601,7 +599,6 @@ function render() {
   curTokens = q ? q.split(/\s+/).filter(Boolean) : [];
   const guess = curTokens.length ? guessCategory(q) : '';
   hintEl.textContent = (curTokens.length && guess) ? '已自动识别分类：' + guess : '';
-
   const shown = items.filter((it) => {
     if (onlyMine && !it.isMine) return false;
     if (typeFilter && it.type !== typeFilter) return false;
@@ -611,17 +608,12 @@ function render() {
     if (curTokens.every((t) => hay.includes(t))) return true;
     return !!(guess && it.category === guess);
   });
-
   $('#stat').textContent = '待认领 ' + items.filter((x) => x.status === 'open').length + ' 条';
-  $('#count').textContent = onlyMine
-    ? '我的发布 ' + shown.length + ' 条'
+  $('#count').textContent = onlyMine ? '我的发布 ' + shown.length + ' 条'
     : (curTokens.length ? '找到 ' + shown.length + ' 条' : '共 ' + shown.length + ' 条信息');
-
   if (!shown.length) {
     listEl.innerHTML = '<div class="empty">'
-      + (onlyMine ? '你还没有发布过信息'
-        : items.length ? '没有匹配的信息，换个关键词试试 🙈'
-        : '还没有人发布，点上面「发布信息」发第一条吧 👆')
+      + (onlyMine ? '你还没有发布过信息' : items.length ? '没有匹配的信息，换个关键词试试 🙈' : '还没有人发布，点上面「发布信息」发第一条吧 👆')
       + '</div>';
     return;
   }
@@ -631,73 +623,56 @@ function render() {
 async function load() {
   if (!currentUser) return;
   try {
-    const { data, error } = await db
-      .from('items_public')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(300);
+    const { data, error } = await db.from('items_public').select('*').order('created_at', { ascending: false }).limit(300);
     if (error) throw error;
-
     items = (data || []).map((r) => ({
-      id: r.id,
-      ownerName: r.owner_name || '',
-      title: r.title,
-      type: r.type,
-      category: r.category || '其他',
-      place: r.place || '',
-      time: r.happened_on || '',
-      desc: r.description || '',
-      image: r.image_url || '',
-      claimQuestion: r.claim_question || '',
-      needsAnswer: !!r.needs_answer,
-      isMine: !!r.is_mine,
-      reports: r.report_count || 0,
-      status: r.status,
-      createdAt: new Date(r.created_at).getTime()
+      id: r.id, ownerName: r.owner_name || '', title: r.title, type: r.type,
+      category: r.category || '其他', place: r.place || '', time: r.happened_on || '',
+      desc: r.description || '', image: r.image_url || '', claimQuestion: r.claim_question || '',
+      needsAnswer: !!r.needs_answer, isMine: !!r.is_mine, reports: r.report_count || 0,
+      status: r.status, createdAt: new Date(r.created_at).getTime()
     }));
     render();
   } catch (e) {
-    listEl.innerHTML = '<div class="empty">加载失败：' + esc(e.message)
-      + '<br><br>请检查数据库是否已建好</div>';
+    listEl.innerHTML = '<div class="empty">加载失败：' + esc(e.message) + '<br><br>请检查数据库是否已建好</div>';
   }
 }
 
 qEl.addEventListener('input', render);
-
 $('#typeChips').addEventListener('click', (e) => {
   const btn = e.target.closest('button[data-type]');
   if (btn) {
-    typeFilter = btn.dataset.type;
-    onlyMine = false;
+    typeFilter = btn.dataset.type; onlyMine = false;
     $('#mineBtn').classList.remove('on');
     [...$('#typeChips').children].forEach((x) => x.classList.toggle('on', x === btn));
-    render();
-    return;
+    render(); return;
   }
   if (e.target.id === 'mineBtn') {
-    onlyMine = !onlyMine;
-    typeFilter = '';
+    onlyMine = !onlyMine; typeFilter = '';
     $('#mineBtn').classList.toggle('on', onlyMine);
-    [...$('#typeChips').children].forEach((x) => {
-      if (x.dataset.type !== undefined) x.classList.toggle('on', false);
-    });
+    [...$('#typeChips').children].forEach((x) => { if (x.dataset.type !== undefined) x.classList.toggle('on', false); });
     render();
   }
 });
-
 $('#catChips').addEventListener('click', (e) => {
   const b = e.target.closest('button[data-cat]');
   if (!b) return;
-  catFilter = b.dataset.cat;
-  renderCats();
-  render();
+  catFilter = b.dataset.cat; renderCats(); render();
 });
 
-$('#catSel').innerHTML = CATEGORIES.map(
-  (c) => '<option value="' + esc(c) + '">' + esc(c) + '</option>'
-).join('');
+/* ---------- 发布 / 编辑 ---------- */
+$('#catSel').innerHTML = CATEGORIES.map((c) => '<option value="' + esc(c) + '">' + esc(c) + '</option>').join('');
 
+function resetForm() {
+  form.reset();
+  form.classList.add('hide');
+  $('#claimFields').classList.add('hide');
+  pickType = 'lost'; editingId = null;
+  [...$('#typePick').children].forEach((x, i) => x.classList.toggle('on', i === 0));
+  form.querySelector('button[type=submit]').textContent = '发布';
+}
 $('#toggleForm').addEventListener('click', () => {
+  if (!form.classList.contains('hide') && editingId) { resetForm(); return; }
   form.classList.toggle('hide');
   if (!form.classList.contains('hide')) {
     form.querySelector('[name=title]').focus();
@@ -705,8 +680,7 @@ $('#toggleForm').addEventListener('click', () => {
     if (!t.value) t.value = new Date().toISOString().slice(0, 10);
   }
 });
-$('#cancel').addEventListener('click', () => form.classList.add('hide'));
-
+$('#cancel').addEventListener('click', resetForm);
 $('#typePick').addEventListener('click', (e) => {
   const b = e.target.closest('button[data-t]');
   if (!b) return;
@@ -714,31 +688,68 @@ $('#typePick').addEventListener('click', (e) => {
   [...$('#typePick').children].forEach((x) => x.classList.toggle('on', x === b));
   $('#claimFields').classList.toggle('hide', pickType !== 'found');
 });
+function openEdit(id) {
+  const it = items.find((x) => x.id === id);
+  if (!it) return;
+  editingId = id;
+  form.classList.remove('hide');
+  form.querySelector('[name=title]').value = it.title;
+  form.querySelector('[name=category]').value = it.category;
+  form.querySelector('[name=place]').value = it.place;
+  form.querySelector('[name=time]').value = it.time;
+  form.querySelector('[name=desc]').value = it.desc;
+  form.querySelector('[name=contact]').value = it.contact;
+  form.querySelector('[name=image]').value = '';
+  pickType = it.type;
+  [...$('#typePick').children].forEach((x) => x.classList.toggle('on', x.dataset.t === it.type));
+  $('#claimFields').classList.add('hide');
+  form.querySelector('button[type=submit]').textContent = '保存修改';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  toast('修改后点「保存修改」');
+}
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (!currentUser) return toast('请先登录');
   const btn = form.querySelector('button[type=submit]');
+  const isEditing = !!editingId;
   btn.disabled = true;
-  btn.textContent = '发布中…';
+  btn.textContent = isEditing ? '保存中…' : '发布中…';
   try {
-    checkRate();
-
+    if (!isEditing) checkRate();
     const title = form.querySelector('[name=title]').value.trim();
     if (!title) throw new Error('请填写物品名称');
     const contact = form.querySelector('[name=contact]').value.trim();
     if (!contact) throw new Error('请留下联系方式，不然别人找到也没法还你');
 
-    let imageUrl = '';
+    const old = isEditing ? items.find((x) => x.id === editingId) : null;
+    let imageUrl = old ? old.image : '';
     const file = form.querySelector('[name=image]').files[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) throw new Error('图片超过 10MB，请换一张');
       const blob = await compress(file);
       const path = uid() + '.jpg';
-      const up = await db.storage.from('item-photos')
-        .upload(path, blob, { contentType: 'image/jpeg', upsert: false });
+      const up = await db.storage.from('item-photos').upload(path, blob, { contentType: 'image/jpeg', upsert: false });
       if (up.error) throw new Error('图片上传失败：' + up.error.message);
       imageUrl = db.storage.from('item-photos').getPublicUrl(path).data.publicUrl;
+      if (old && old.image) await removeImage(old.image);
+    }
+
+    if (isEditing) {
+      const { data, error } = await db.rpc('item_update', {
+        p_id: editingId, p_title: title,
+        p_category: form.querySelector('[name=category]').value,
+        p_place: form.querySelector('[name=place]').value.trim(),
+        p_happened_on: form.querySelector('[name=time]').value,
+        p_description: form.querySelector('[name=desc]').value.trim(),
+        p_contact: contact, p_image_url: imageUrl
+      });
+      if (error) throw error;
+      if (!data) throw new Error('只有发布者本人才能修改');
+      toast('已保存 ✅');
+      resetForm();
+      await load();
+      return;
     }
 
     const isFound = pickType === 'found';
@@ -747,36 +758,21 @@ form.addEventListener('submit', async (e) => {
     if (question && !answer) throw new Error('设了认领问题就要填正确答案');
 
     const { error } = await db.from('items').insert({
-      id: uid(),
-      owner_id: currentUser.id,
-      owner_name: $('#nickName').textContent,
-      title,
-      type: pickType,
+      id: uid(), owner_id: currentUser.id, owner_name: $('#nickName').textContent,
+      title, type: pickType,
       category: form.querySelector('[name=category]').value,
       place: form.querySelector('[name=place]').value.trim(),
       happened_on: form.querySelector('[name=time]').value,
       description: form.querySelector('[name=desc]').value.trim(),
-      contact,
-      image_url: imageUrl,
-      claim_question: question,
-      claim_answer: answer
+      contact, image_url: imageUrl, claim_question: question, claim_answer: answer
     });
     if (error) throw new Error(error.message.replace(/^.*?:\s*/, '') || '发布失败');
-
     markPosted();
-    form.reset();
-    form.classList.add('hide');
-    $('#claimFields').classList.add('hide');
-    pickType = 'lost';
-    [...$('#typePick').children].forEach((x, i) => x.classList.toggle('on', i === 0));
+    resetForm();
     toast('发布成功 🎉');
     await load();
-  } catch (err) {
-    toast(err.message || '发布失败');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '发布';
-  }
+  } catch (err) { toast(err.message || '操作失败'); }
+  finally { btn.disabled = false; btn.textContent = editingId ? '保存修改' : '发布'; }
 });
 
 listEl.addEventListener('click', async (e) => {
@@ -784,8 +780,10 @@ listEl.addEventListener('click', async (e) => {
   if (!b) return;
   const id = b.dataset.id;
   const act = b.dataset.act;
+  const it = items.find((x) => x.id === id);
 
   if (act === 'claim') return openClaim(id);
+  if (act === 'edit') return openEdit(id);
 
   if (act === 'report') {
     if (!confirm('举报这条信息？如果是误报请别点。累计 3 人举报会自动下架。')) return;
@@ -794,11 +792,8 @@ listEl.addEventListener('click', async (e) => {
       const { error } = await db.rpc('item_report', { p_id: id });
       if (error) throw error;
       toast('已举报，管理员会处理');
-    } catch (err) {
-      toast(err.message || '举报失败');
-    } finally {
-      b.disabled = false;
-    }
+    } catch (err) { toast(err.message || '举报失败'); }
+    finally { b.disabled = false; }
     return;
   }
 
@@ -806,31 +801,22 @@ listEl.addEventListener('click', async (e) => {
     if (!confirm('管理员操作：删除这条信息？')) return;
     b.disabled = true;
     try {
-      const { data, error } = await db.rpc('admin_delete', {
-        p_id: id,
-        p_account: adminAuth.account,
-        p_password: adminAuth.password
-      });
+      const { data, error } = await db.rpc('admin_delete', { p_id: id, p_account: adminAuth.account, p_password: adminAuth.password });
       if (error) throw error;
       if (!data) throw new Error('管理员账号或密码不对，请重新登录');
+      if (it && it.image) await removeImage(it.image);
       toast('已删除');
       await load();
-    } catch (err) {
-      toast(err.message || '删除失败');
-    } finally {
-      b.disabled = false;
-    }
+    } catch (err) { toast(err.message || '删除失败'); }
+    finally { b.disabled = false; }
     return;
   }
 
   if (act === 'del' && !confirm('确定要删除这条信息吗？删了就找不回来了。')) return;
-
   b.disabled = true;
   try {
     if (act === 'done' || act === 'open') {
-      const { data, error } = await db.rpc('item_set_status', {
-        p_id: id, p_status: act === 'done' ? 'done' : 'open'
-      });
+      const { data, error } = await db.rpc('item_set_status', { p_id: id, p_status: act === 'done' ? 'done' : 'open' });
       if (error) throw error;
       if (!data) throw new Error('只有发布者本人才能修改这条信息');
       toast(act === 'done' ? '已标记完成 ✅' : '已重新开启');
@@ -840,16 +826,15 @@ listEl.addEventListener('click', async (e) => {
       const { data, error } = await db.rpc('item_delete', { p_id: id });
       if (error) throw error;
       if (!data) throw new Error('只有发布者本人才能删除这条信息');
+      if (it && it.image) await removeImage(it.image);
       toast('已删除');
       await load();
     }
-  } catch (err) {
-    toast(err.message || '操作失败');
-  } finally {
-    b.disabled = false;
-  }
+  } catch (err) { toast(err.message || '操作失败'); }
+  finally { b.disabled = false; }
 });
 
+/* ---------- 认领 ---------- */
 function openClaim(id) {
   const it = items.find((x) => x.id === id);
   if (!it) return;
@@ -857,59 +842,40 @@ function openClaim(id) {
   curClaimId = id;
   modalMode = 'claim';
   $('#mTitle').textContent = it.type === 'found' ? '认领这件物品' : '联系发布者';
-  $('#mSub').textContent = it.needsAnswer
-    ? '请回答发布者设的问题：\n' + it.claimQuestion
-    : '提示：先确认好物品特征，避免误认。';
+  $('#mSub').textContent = it.needsAnswer ? '请回答发布者设的问题：\n' + it.claimQuestion : '提示：先确认好物品特征，避免误认。';
   const ans = $('#mAnswer');
-  ans.value = '';
-  ans.type = 'text';
-  ans.placeholder = '请输入答案';
+  ans.value = ''; ans.type = 'text'; ans.placeholder = '请输入答案';
   ans.classList.toggle('hide', !it.needsAnswer);
-  $('#mAnswer2').classList.add('hide');
-  $('#mAnswer2').value = '';
+  $('#mAnswer2').classList.add('hide'); $('#mAnswer2').value = '';
   $('#mContact').innerHTML = '';
-  $('#mOk').classList.remove('hide');
-  $('#mOk').textContent = '确认';
+  $('#mOk').classList.remove('hide'); $('#mOk').textContent = '确认';
   $('#modal').classList.remove('hide');
   if (it.needsAnswer) setTimeout(() => ans.focus(), 100);
 }
 
+/* ---------- 管理员 ---------- */
 function openAdmin() {
   if (adminAuth) {
-    if (confirm('退出管理模式？')) {
-      clearAdmin();
-      toast('已退出管理模式');
-      render();
-    }
+    if (confirm('退出管理模式？')) { clearAdmin(); toast('已退出管理模式'); }
     return;
   }
   modalMode = 'admin';
   $('#mTitle').textContent = '管理员登录';
   $('#mSub').textContent = '输入管理员账号和密码';
-  const a1 = $('#mAnswer');
-  const a2 = $('#mAnswer2');
-  a1.value = '';
-  a1.type = 'text';
-  a1.placeholder = '管理员账号';
-  a1.classList.remove('hide');
-  a2.value = '';
-  a2.classList.remove('hide');
+  const a1 = $('#mAnswer'); const a2 = $('#mAnswer2');
+  a1.value = ''; a1.type = 'text'; a1.placeholder = '管理员账号'; a1.classList.remove('hide');
+  a2.value = ''; a2.classList.remove('hide');
   $('#mContact').innerHTML = '';
-  $('#mOk').classList.remove('hide');
-  $('#mOk').textContent = '进入';
+  $('#mOk').classList.remove('hide'); $('#mOk').textContent = '进入';
   $('#modal').classList.remove('hide');
   setTimeout(() => a1.focus(), 100);
 }
-
 $('#adminBtn').addEventListener('click', openAdmin);
 $('#mCancel').addEventListener('click', () => $('#modal').classList.add('hide'));
-$('#modal').addEventListener('click', (e) => {
-  if (e.target.id === 'modal') $('#modal').classList.add('hide');
-});
+$('#modal').addEventListener('click', (e) => { if (e.target.id === 'modal') $('#modal').classList.add('hide'); });
 
 $('#mOk').addEventListener('click', async () => {
   const b = $('#mOk');
-
   if (modalMode === 'admin') {
     b.disabled = true;
     try {
@@ -917,38 +883,28 @@ $('#mOk').addEventListener('click', async () => {
       const password = $('#mAnswer2').value;
       if (!account || !password) throw new Error('请填账号和密码');
       if (!currentUser) throw new Error('请先登录');
-      const { data, error } = await db.rpc('admin_check', {
-        p_account: account,
-        p_password: password
-      });
+      const { data, error } = await db.rpc('admin_check', { p_account: account, p_password: password });
       if (error) throw error;
       if (!data) throw new Error('管理员账号或密码不对');
       adminAuth = { account, password, uid: currentUser.id };
       sessionStorage.setItem('admin_auth', JSON.stringify(adminAuth));
       document.body.classList.add('admin-on');
       $('#adminBtn').textContent = '管理员模式（点此退出）';
+      $('#reportsBtn').classList.remove('hide');
       $('#modal').classList.add('hide');
       toast('已进入管理模式');
       render();
-    } catch (err) {
-      toast(err.message || '验证失败');
-    } finally {
-      b.disabled = false;
-    }
+    } catch (err) { toast(err.message || '验证失败'); }
+    finally { b.disabled = false; }
     return;
   }
 
   if (!curClaimId) return;
-  b.disabled = true;
-  b.textContent = '验证中…';
+  b.disabled = true; b.textContent = '验证中…';
   try {
-    const { data, error } = await db.rpc('item_claim', {
-      p_id: curClaimId,
-      p_answer: $('#mAnswer').value
-    });
+    const { data, error } = await db.rpc('item_claim', { p_id: curClaimId, p_answer: $('#mAnswer').value });
     if (error) throw error;
     if (!data || !data.ok) throw new Error((data && data.msg) || '验证没通过');
-
     $('#mAnswer').classList.add('hide');
     b.classList.add('hide');
     $('#mSub').textContent = '验证通过 ✅ 这是对方的联系方式';
@@ -958,21 +914,64 @@ $('#mOk').addEventListener('click', async () => {
     if (c) {
       $('#copyBtn').addEventListener('click', () => {
         const done = () => toast('已复制');
-        if (navigator.clipboard) navigator.clipboard.writeText(c).then(done, done);
-        else done();
+        if (navigator.clipboard) navigator.clipboard.writeText(c).then(done, done); else done();
       });
     }
-  } catch (err) {
-    toast(err.message || '验证失败');
-  } finally {
-    b.disabled = false;
-    b.textContent = '确认';
-  }
+  } catch (err) { toast(err.message || '验证失败'); }
+  finally { b.disabled = false; b.textContent = '确认'; }
+});
+
+/* ---------- 举报记录 ---------- */
+async function openReports() {
+  if (!adminAuth) return toast('请先进入管理模式');
+  $('#repList').innerHTML = '<div class="empty" style="padding:20px">加载中…</div>';
+  $('#repModal').classList.remove('hide');
+  try {
+    const { data, error } = await db.rpc('admin_reports', { p_account: adminAuth.account, p_password: adminAuth.password });
+    if (error) throw error;
+    if (!data) throw new Error('管理员账号或密码不对');
+    if (!data.length) { $('#repList').innerHTML = '<div class="empty" style="padding:20px">还没有人举报 ✅</div>'; return; }
+    $('#repList').innerHTML = data.map((r) => (
+      '<div class="rep-item"><b>' + esc(r.title) + '</b>'
+      + '<div class="rep-meta">👤 ' + esc(r.owner_name || '同学') + ' · 被举报 ' + (r.report_count || 0) + ' 次 · 状态：'
+      + (r.status === 'hidden' ? '已自动隐藏' : r.status === 'done' ? '已完成' : '显示中') + '</div>'
+      + '<button class="danger" data-rep-del="' + r.id + '" data-img="' + esc(r.image_url || '') + '">删除这条</button>'
+      + '<button data-rep-clear="' + r.id + '">忽略举报</button></div>'
+    )).join('');
+  } catch (err) { $('#repList').innerHTML = '<div class="empty" style="padding:20px">' + esc(err.message) + '</div>'; }
+}
+$('#reportsBtn').addEventListener('click', openReports);
+$('#repClose').addEventListener('click', () => $('#repModal').classList.add('hide'));
+$('#repModal').addEventListener('click', (e) => { if (e.target.id === 'repModal') $('#repModal').classList.add('hide'); });
+
+$('#repList').addEventListener('click', async (e) => {
+  const del = e.target.closest('button[data-rep-del]');
+  const clr = e.target.closest('button[data-rep-clear]');
+  if (!del && !clr) return;
+  const id = (del || clr).dataset.repDel || (del || clr).dataset.repClear;
+  try {
+    if (del) {
+      if (!confirm('删除这条被举报的信息？')) return;
+      const img = del.dataset.img || '';
+      const { data, error } = await db.rpc('admin_delete', { p_id: id, p_account: adminAuth.account, p_password: adminAuth.password });
+      if (error) throw error;
+      if (!data) throw new Error('操作失败');
+      if (img) await removeImage(img);
+      toast('已删除');
+    } else {
+      const { data, error } = await db.rpc('admin_clear_reports', { p_id: id, p_account: adminAuth.account, p_password: adminAuth.password });
+      if (error) throw error;
+      if (!data) throw new Error('操作失败');
+      toast('已忽略举报');
+    }
+    await load(); openReports();
+  } catch (err) { toast(err.message || '操作失败'); }
 });
 
 if (adminAuth) {
   document.body.classList.add('admin-on');
   $('#adminBtn').textContent = '管理员模式（点此退出）';
+  $('#reportsBtn').classList.remove('hide');
 }
 renderCats();
 render();
