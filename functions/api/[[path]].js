@@ -338,7 +338,10 @@ export async function onRequest(context) {
       const ext = (file.name || 'photo.jpg').split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
       const key = Date.now().toString(36) + '-' + randomHex(8) + '.' + ext;
       await env.PHOTOS.put(key, await file.arrayBuffer(), {
-        httpMetadata: { contentType: file.type || 'image/jpeg' }
+        httpMetadata: {
+          contentType: file.type || 'image/jpeg',
+          cacheControl: 'public, max-age=31536000'
+        }
       });
       return json({ url: env.R2_PUBLIC.replace(/\/$/, '') + '/' + key, key });
     }
