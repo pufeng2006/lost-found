@@ -54,6 +54,11 @@ async function isAdmin(env, account, password) {
   const p = await env.DB.prepare('select value from settings where key = ?').bind('admin_password').first();
   return !!(a && p && account === a.value && password === p.value);
 }
+async function touch(env, userId) {
+  try {
+    await env.DB.prepare('update users set last_seen = ? where id = ?').bind(Date.now(), userId).run();
+  } catch (e) {}
+}
 
 export async function onRequest(context) {
   const request = context.request;
@@ -62,6 +67,14 @@ export async function onRequest(context) {
   const p = new URL(request.url).pathname.replace(/^\/api/, '');
   try {
     if (p === '/health') return json({ ok: true, time: new Date().toISOString() });
+
+    if (p === '/stats' && request.method === 'GET') {
+      const total = await env.DB.prepare('select count(*) as c from users').first();
+      const online = await env.DB.prepare(
+        'select count(*) as c from users where last_seen > ?'
+      ).bind(Date.now() - 600000).first();
+      return json({ users: total ? total.c : 0, online: online ? online.c : 0 });
+    }
 
     if (p === '/register' && request.method === 'POST') {
       const b = await request.json();
@@ -86,9 +99,9 @@ export async function onRequest(context) {
 
       await env.DB.prepare(
         `insert into users(id, account, nickname, password_hash, password_salt,
-           question, answer_hash, answer_salt, created_at)
-         values(?,?,?,?,?,?,?,?,?)`
-      ).bind(id, account, nickname || ('同学' + account.slice(-4)), ph, salt, question, ah, answerSalt, Date.now()).run();
+           question, answer_hash, answer_salt, created_at, last_seen)
+         values(?,?,?,?,?,?,?,?,?,?)`
+      ).bind(id, account, nickname || ('同学' + account.slice(-4)), ph, salt, question, ah, answerSalt, Date.now(), Date.now()).run();
 
       const token = await newSession(env, id);
       return json({ token, user: { id, account, nickname } });
@@ -103,6 +116,7 @@ export async function onRequest(context) {
       const h = await hashText(password, u.password_salt);
       if (h !== u.password_hash) return bad('账号或密码不对', 401);
       const token = await newSession(env, u.id);
+      await touch(env, u.id);
       return json({ token, user: { id: u.id, account: u.account, nickname: u.nickname } });
     }
 
@@ -115,12 +129,14 @@ export async function onRequest(context) {
     if (p === '/me' && request.method === 'GET') {
       const user = await getUser(request, env);
       if (!user) return bad('请先登录', 401);
+      await touch(env, user.id);
       return json({ user });
     }
 
     if (p === '/items' && request.method === 'GET') {
       const user = await getUser(request, env);
       if (!user) return bad('请先登录', 401);
+      await touch(env, user.id);
       const rows = await env.DB.prepare(
         `select id, owner_id, owner_name, title, type, category, place, happened_on,
                 description, image_url, claim_question, status, report_count, created_at
@@ -170,6 +186,7 @@ export async function onRequest(context) {
         String(b.claimAnswer || '').slice(0, 40),
         Date.now()
       ).run();
+      await touch(env, user.id);
       return json({ id });
     }
 
@@ -237,6 +254,7 @@ export async function onRequest(context) {
         }
         await env.DB.prepare('insert into claim_tries(item_id,user_id,ok,created_at) values(?,?,1,?)')
           .bind(id, user.id, Date.now()).run();
+        await touch(env, user.id);
         return json({ ok: true, contact: item.contact });
       }
 
@@ -343,6 +361,7 @@ export async function onRequest(context) {
           cacheControl: 'public, max-age=31536000'
         }
       });
+      await touch(env, user.id);
       return json({ url: env.R2_PUBLIC.replace(/\/$/, '') + '/' + key, key });
     }
 
