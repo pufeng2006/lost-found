@@ -13,6 +13,7 @@
   h1{font-size:22px;margin:4px 0 6px}
   .head{display:flex;align-items:baseline;gap:8px}
   .stat{font-size:12px;color:var(--muted);margin-left:auto}
+  .stats-line{font-size:12px;color:var(--muted);margin:0 0 10px;line-height:1.5}
   .searchbox{position:relative;margin-bottom:8px}
   #q{width:100%;padding:13px 15px;font-size:15px;border:2px solid var(--line);border-radius:14px;outline:none;background:#fff;transition:.15s}
   #q:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(37,99,235,.10)}
@@ -129,6 +130,7 @@
       <h1>🎒 校园失物招领</h1>
       <span class="stat" id="stat"></span>
     </div>
+    <div class="stats-line" id="statsLine">统计加载中…</div>
     <div class="userbar">
       <span>👋 <b id="nickName">同学</b></span>
       <button id="logoutBtn" type="button">退出登录</button>
@@ -285,6 +287,7 @@ let modalMode = 'claim';
 let adminAuth = null;
 let editingId = null;
 let fgStep = 1;
+let statsTimer = null;
 try { adminAuth = JSON.parse(sessionStorage.getItem('admin_auth') || 'null'); } catch (e) { adminAuth = null; }
 
 const $ = (s) => document.querySelector(s);
@@ -349,7 +352,6 @@ function uid() {
   try { return crypto.randomUUID(); }
   catch (e) { return Date.now().toString(36) + Math.random().toString(36).slice(2, 10); }
 }
-/* 压缩更狠：640px / 质量 0.6，单张约 30~45KB */
 function compress(file, max = 640, quality = 0.6) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -374,6 +376,12 @@ async function uploadImage(file) {
   fd.append('file', blob, 'photo.jpg');
   return await api('/api/upload', { method: 'POST', body: fd });
 }
+async function loadStats() {
+  try {
+    const s = await api('/api/stats');
+    $('#statsLine').textContent = '👥 已注册 ' + (s.users || 0) + ' 人 · 🟢 在线 ' + (s.online || 0) + ' 人';
+  } catch (e) {}
+}
 function clearAdmin() {
   adminAuth = null;
   try { sessionStorage.removeItem('admin_auth'); } catch (e) {}
@@ -395,6 +403,7 @@ function showAuth() {
   $('#authView').classList.remove('hide');
   items = [];
   listEl.innerHTML = '';
+  if (statsTimer) { clearInterval(statsTimer); statsTimer = null; }
 }
 function enterApp(user) {
   currentUser = user;
@@ -404,6 +413,9 @@ function enterApp(user) {
   $('#nickName').textContent = user.nickname || user.account;
   renderCats();
   load();
+  loadStats();
+  if (statsTimer) clearInterval(statsTimer);
+  statsTimer = setInterval(loadStats, 60000);
 }
 
 document.querySelectorAll('.tab').forEach((t) => {
