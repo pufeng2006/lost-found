@@ -4,7 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>校园失物招领</title>
-<meta name="description" content="校园失物招领：登录后发布失物信息，输关键词马上找到。">
 <style>
   :root{--bg:#f5f7fa;--card:#fff;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--brand:#2563eb;--lost:#ef4444;--found:#10b981}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -252,15 +251,10 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* ===== 已填好，勿改 ===== */
-const SUPABASE_URL = 'https://ybenfocmxtteapzejlmj.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliZW5mb2NteHR0ZWFwemVqbG1qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU3MDA1OTIsImV4cCI6MjExMTI3NjU5Mn0.bycF1yd82U-pz2iCfpnbUtt3sOeaO-Psj82_es1TBf8';
-/* ======================= */
-
-const ACCOUNT_DOMAIN = '@campus-lost.app';
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+/* ===== 空 = 同域名，自动走 /api ===== */
+const API_BASE = '';
+/* ================================== */
 
 document.addEventListener('gesturestart', function (e) { e.preventDefault(); }, { passive: false });
 document.addEventListener('gesturechange', function (e) { e.preventDefault(); }, { passive: false });
@@ -268,8 +262,6 @@ document.addEventListener('gestureend', function (e) { e.preventDefault(); }, { 
 
 const CATEGORIES = ['证件卡类','电子产品','钥匙','书包钱包','衣物鞋帽','书籍资料','雨伞','水杯','眼镜','其他'];
 const OLD_DAYS = 30;
-const POST_LIMIT = 3;
-const POST_WINDOW = 600000;
 
 const RULES = [
   { cat:'电子产品', words:['手机','耳机','airpods','蓝牙','充电宝','充电器','电脑','笔记本','平板','ipad','u盘','数据线','鼠标','键盘','相机','手表','手环'] },
@@ -302,6 +294,25 @@ const listEl = $('#list');
 const qEl = $('#q');
 const hintEl = $('#hint');
 const form = $('#form');
+
+async function api(path, opt = {}) {
+  const headers = Object.assign({}, opt.headers || {});
+  if (!(opt.body instanceof FormData)) headers['Content-Type'] = 'application/json';
+  const token = localStorage.getItem('lf_token');
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+
+  const res = await fetch(API_BASE + path, Object.assign({}, opt, { headers }));
+  const data = await res.json().catch(() => ({}));
+
+  if (res.status === 401 && token && path !== '/api/login' && path !== '/api/register') {
+    localStorage.removeItem('lf_token');
+    localStorage.removeItem('lf_user');
+    currentUser = null;
+    showAuth();
+  }
+  if (!res.ok) throw new Error(data.error || '网络错误');
+  return data;
+}
 
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -360,31 +371,13 @@ function compress(file, max = 900, quality = 0.72) {
     img.src = url;
   });
 }
-function checkRate() {
-  let list = [];
-  try { list = JSON.parse(localStorage.getItem('recent_posts') || '[]'); } catch (e) { list = []; }
-  const now = Date.now();
-  list = list.filter((t) => now - t < POST_WINDOW);
-  if (list.length >= POST_LIMIT) throw new Error('你 10 分钟内已经发了 ' + POST_LIMIT + ' 条，歇一会儿再发');
+async function uploadImage(file) {
+  const blob = await compress(file);
+  const fd = new FormData();
+  fd.append('file', blob, 'photo.jpg');
+  return await api('/api/upload', { method: 'POST', body: fd });
 }
-function markPosted() {
-  let list = [];
-  try { list = JSON.parse(localStorage.getItem('recent_posts') || '[]'); } catch (e) { list = []; }
-  list.push(Date.now());
-  localStorage.setItem('recent_posts', JSON.stringify(list));
-}
-function storagePath(url) {
-  if (!url) return '';
-  const marker = '/item-photos/';
-  const i = url.indexOf(marker);
-  if (i < 0) return '';
-  return decodeURIComponent(url.slice(i + marker.length).split('?')[0]);
-}
-async function removeImage(url) {
-  const p = storagePath(url);
-  if (!p) return;
-  try { await db.storage.from('item-photos').remove([p]); } catch (e) {}
-}
+
 function clearAdmin() {
   adminAuth = null;
   try { sessionStorage.removeItem('admin_auth'); } catch (e) {}
@@ -407,13 +400,11 @@ function showAuth() {
   items = [];
 }
 function enterApp(user) {
-  if (currentUser && currentUser.id === user.id && !$('#appView').classList.contains('hide')) return;
-  if (adminAuth && adminAuth.uid !== user.id) clearAdmin();
   currentUser = user;
+  localStorage.setItem('lf_user', JSON.stringify(user));
   $('#authView').classList.add('hide');
   $('#appView').classList.remove('hide');
-  const m = user.user_metadata || {};
-  $('#nickName').textContent = m.nickname || m.account || (user.email || '').split('@')[0];
+  $('#nickName').textContent = user.nickname || user.account;
   renderCats();
   load();
 }
@@ -442,8 +433,9 @@ $('#loginForm').addEventListener('submit', async (e) => {
   if (!account || !password) return toast('请填账号和密码');
   btn.disabled = true; btn.textContent = '登录中…';
   try {
-    const { error } = await db.auth.signInWithPassword({ email: account + ACCOUNT_DOMAIN, password });
-    if (error) throw new Error(/invalid|credential/i.test(error.message) ? '账号或密码不对' : error.message);
+    const r = await api('/api/login', { method: 'POST', body: JSON.stringify({ account, password }) });
+    localStorage.setItem('lf_token', r.token);
+    enterApp(r.user);
     f.reset();
   } catch (err) { toast(err.message || '登录失败'); }
   finally { btn.disabled = false; btn.textContent = '登录'; }
@@ -456,31 +448,19 @@ $('#regForm').addEventListener('submit', async (e) => {
   const account = f.account.value.trim().toLowerCase();
   const password = f.password.value;
   const nickname = f.nickname.value.trim() || randomNick();
-  const secq = f.secq.value.trim();
-  const seca = f.seca.value.trim();
-
-  if (!/^[a-z0-9_]{3,20}$/.test(account)) return toast('账号只能用 3-20 位字母、数字、下划线');
+  const question = f.secq.value.trim();
+  const answer = f.seca.value.trim();
+  if (!account || !password) return toast('请填账号和密码');
   if (password.length < 6) return toast('密码至少 6 位');
-  if (!secq || !seca) return toast('请填写密保问题和答案');
-
+  if (!question || !answer) return toast('请填写密保问题和答案');
   btn.disabled = true; btn.textContent = '注册中…';
   try {
-    const { data, error } = await db.auth.signUp({
-      email: account + ACCOUNT_DOMAIN, password,
-      options: { data: { nickname, account } }
+    const r = await api('/api/register', {
+      method: 'POST',
+      body: JSON.stringify({ account, password, nickname, question, answer })
     });
-    if (error) {
-      if (/already|registered|exists/i.test(error.message)) throw new Error('这个账号已经被注册了，换一个吧');
-      throw new Error(error.message);
-    }
-    if (data.user && (!data.user.identities || data.user.identities.length === 0) && !data.session) {
-      throw new Error('这个账号已经被注册了，换一个吧');
-    }
-    if (!data.session) throw new Error('注册成功但需要邮箱验证。请先在 Supabase 关闭 Confirm email 再来试。');
-
-    const { error: qaErr } = await db.rpc('set_security_qa', { p_question: secq, p_answer: seca });
-    if (qaErr) throw new Error('账号已创建，但密保设置失败：' + qaErr.message);
-
+    localStorage.setItem('lf_token', r.token);
+    enterApp(r.user);
     toast('注册成功，欢迎你 🎉');
     f.reset();
   } catch (err) { toast(err.message || '注册失败'); }
@@ -489,22 +469,28 @@ $('#regForm').addEventListener('submit', async (e) => {
 
 $('#logoutBtn').addEventListener('click', async () => {
   clearAdmin();
-  await db.auth.signOut();
+  try { await api('/api/logout', { method: 'POST' }); } catch (e) {}
+  localStorage.removeItem('lf_token');
+  localStorage.removeItem('lf_user');
+  currentUser = null;
+  showAuth();
   toast('已退出登录');
 });
 
 (async function boot() {
-  try {
-    const { data } = await db.auth.getSession();
-    if (data.session) enterApp(data.session.user);
-  } catch (e) {}
-  db.auth.onAuthStateChange((evt, session) => {
-    if (!session) { currentUser = null; clearAdmin(); showAuth(); return; }
-    enterApp(session.user);
-  });
+  const token = localStorage.getItem('lf_token');
+  const raw = localStorage.getItem('lf_user');
+  if (token && raw) {
+    try {
+      const u = JSON.parse(raw);
+      enterApp(u);
+      const me = await api('/api/me');
+      currentUser = me.user;
+      $('#nickName').textContent = me.user.nickname || me.user.account;
+    } catch (e) {}
+  }
 })();
 
-/* ---------- 忘记密码 ---------- */
 function resetForgot() {
   fgStep = 1;
   $('#fgAccount').value = '';
@@ -527,10 +513,9 @@ $('#fgOk').addEventListener('click', async () => {
   btn.disabled = true;
   try {
     if (fgStep === 1) {
-      const { data, error } = await db.rpc('get_security_question', { p_account: acc });
-      if (error) throw error;
-      if (!data) throw new Error('这个账号没有设置密保问题，请联系管理员 15528827382');
-      $('#fgQuestion').textContent = '密保问题：' + data;
+      const r = await api('/api/password/question', { method: 'POST', body: JSON.stringify({ account: acc }) });
+      if (!r.question) throw new Error('这个账号没有设置密保问题，请联系管理员 15528827382');
+      $('#fgQuestion').textContent = '密保问题：' + r.question;
       $('#fgStep2').classList.remove('hide');
       $('#fgSub').textContent = '回答下面的问题，并设置新密码';
       btn.textContent = '重置密码';
@@ -540,11 +525,11 @@ $('#fgOk').addEventListener('click', async () => {
       const np = $('#fgNewPass').value;
       if (!answer) throw new Error('请输入密保答案');
       if (np.length < 6) throw new Error('新密码至少 6 位');
-      const { data, error } = await db.rpc('reset_password_by_security', {
-        p_account: acc, p_answer: answer, p_new_password: np
+      const r = await api('/api/password/reset', {
+        method: 'POST',
+        body: JSON.stringify({ account: acc, answer, newPassword: np })
       });
-      if (error) throw error;
-      if (!data || !data.ok) throw new Error((data && data.msg) || '重置失败');
+      if (!r.ok) throw new Error(r.msg || '重置失败');
       toast('密码已重置，请用新密码登录');
       $('#forgotModal').classList.add('hide');
       resetForgot();
@@ -553,7 +538,6 @@ $('#fgOk').addEventListener('click', async () => {
   finally { btn.disabled = false; }
 });
 
-/* ---------- 渲染 ---------- */
 function renderCats() {
   const all = ['全部分类', ...CATEGORIES];
   $('#catChips').innerHTML = all.map((c) => {
@@ -623,18 +607,17 @@ function render() {
 async function load() {
   if (!currentUser) return;
   try {
-    const { data, error } = await db.from('items_public').select('*').order('created_at', { ascending: false }).limit(300);
-    if (error) throw error;
+    const data = await api('/api/items');
     items = (data || []).map((r) => ({
-      id: r.id, ownerName: r.owner_name || '', title: r.title, type: r.type,
-      category: r.category || '其他', place: r.place || '', time: r.happened_on || '',
-      desc: r.description || '', image: r.image_url || '', claimQuestion: r.claim_question || '',
-      needsAnswer: !!r.needs_answer, isMine: !!r.is_mine, reports: r.report_count || 0,
-      status: r.status, createdAt: new Date(r.created_at).getTime()
+      id: r.id, ownerName: r.ownerName || '', title: r.title, type: r.type,
+      category: r.category || '其他', place: r.place || '', time: r.time || '',
+      desc: r.desc || '', image: r.image || '', claimQuestion: r.claimQuestion || '',
+      needsAnswer: !!r.needsAnswer, isMine: !!r.isMine, reports: r.reports || 0,
+      status: r.status, createdAt: r.createdAt || 0
     }));
     render();
   } catch (e) {
-    listEl.innerHTML = '<div class="empty">加载失败：' + esc(e.message) + '<br><br>请检查数据库是否已建好</div>';
+    listEl.innerHTML = '<div class="empty">加载失败：' + esc(e.message) + '</div>';
   }
 }
 
@@ -660,7 +643,6 @@ $('#catChips').addEventListener('click', (e) => {
   catFilter = b.dataset.cat; renderCats(); render();
 });
 
-/* ---------- 发布 / 编辑 ---------- */
 $('#catSel').innerHTML = CATEGORIES.map((c) => '<option value="' + esc(c) + '">' + esc(c) + '</option>').join('');
 
 function resetForm() {
@@ -698,7 +680,7 @@ function openEdit(id) {
   form.querySelector('[name=place]').value = it.place;
   form.querySelector('[name=time]').value = it.time;
   form.querySelector('[name=desc]').value = it.desc;
-  form.querySelector('[name=contact]').value = it.contact;
+  form.querySelector('[name=contact]').value = it.contact || '';
   form.querySelector('[name=image]').value = '';
   pickType = it.type;
   [...$('#typePick').children].forEach((x) => x.classList.toggle('on', x.dataset.t === it.type));
@@ -716,7 +698,6 @@ form.addEventListener('submit', async (e) => {
   btn.disabled = true;
   btn.textContent = isEditing ? '保存中…' : '发布中…';
   try {
-    if (!isEditing) checkRate();
     const title = form.querySelector('[name=title]').value.trim();
     if (!title) throw new Error('请填写物品名称');
     const contact = form.querySelector('[name=contact]').value.trim();
@@ -724,50 +705,38 @@ form.addEventListener('submit', async (e) => {
 
     const old = isEditing ? items.find((x) => x.id === editingId) : null;
     let imageUrl = old ? old.image : '';
+    let imageKey = '';
     const file = form.querySelector('[name=image]').files[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) throw new Error('图片超过 10MB，请换一张');
-      const blob = await compress(file);
-      const path = uid() + '.jpg';
-      const up = await db.storage.from('item-photos').upload(path, blob, { contentType: 'image/jpeg', upsert: false });
-      if (up.error) throw new Error('图片上传失败：' + up.error.message);
-      imageUrl = db.storage.from('item-photos').getPublicUrl(path).data.publicUrl;
-      if (old && old.image) await removeImage(old.image);
+      const up = await uploadImage(file);
+      imageUrl = up.url;
+      imageKey = up.key;
     }
 
+    const payload = {
+      title,
+      type: pickType,
+      category: form.querySelector('[name=category]').value,
+      place: form.querySelector('[name=place]').value.trim(),
+      happenedOn: form.querySelector('[name=time]').value,
+      description: form.querySelector('[name=desc]').value.trim(),
+      contact,
+      imageUrl,
+      imageKey,
+      claimQuestion: pickType === 'found' ? form.querySelector('[name=q]').value.trim() : '',
+      claimAnswer: pickType === 'found' ? form.querySelector('[name=a]').value.trim() : ''
+    };
+
     if (isEditing) {
-      const { data, error } = await db.rpc('item_update', {
-        p_id: editingId, p_title: title,
-        p_category: form.querySelector('[name=category]').value,
-        p_place: form.querySelector('[name=place]').value.trim(),
-        p_happened_on: form.querySelector('[name=time]').value,
-        p_description: form.querySelector('[name=desc]').value.trim(),
-        p_contact: contact, p_image_url: imageUrl
-      });
-      if (error) throw error;
-      if (!data) throw new Error('只有发布者本人才能修改');
+      await api('/api/items/' + editingId, { method: 'PATCH', body: JSON.stringify(payload) });
       toast('已保存 ✅');
       resetForm();
       await load();
       return;
     }
 
-    const isFound = pickType === 'found';
-    const question = isFound ? form.querySelector('[name=q]').value.trim() : '';
-    const answer = isFound ? form.querySelector('[name=a]').value.trim() : '';
-    if (question && !answer) throw new Error('设了认领问题就要填正确答案');
-
-    const { error } = await db.from('items').insert({
-      id: uid(), owner_id: currentUser.id, owner_name: $('#nickName').textContent,
-      title, type: pickType,
-      category: form.querySelector('[name=category]').value,
-      place: form.querySelector('[name=place]').value.trim(),
-      happened_on: form.querySelector('[name=time]').value,
-      description: form.querySelector('[name=desc]').value.trim(),
-      contact, image_url: imageUrl, claim_question: question, claim_answer: answer
-    });
-    if (error) throw new Error(error.message.replace(/^.*?:\s*/, '') || '发布失败');
-    markPosted();
+    await api('/api/items', { method: 'POST', body: JSON.stringify(payload) });
     resetForm();
     toast('发布成功 🎉');
     await load();
@@ -780,8 +749,6 @@ listEl.addEventListener('click', async (e) => {
   if (!b) return;
   const id = b.dataset.id;
   const act = b.dataset.act;
-  const it = items.find((x) => x.id === id);
-
   if (act === 'claim') return openClaim(id);
   if (act === 'edit') return openEdit(id);
 
@@ -789,8 +756,7 @@ listEl.addEventListener('click', async (e) => {
     if (!confirm('举报这条信息？如果是误报请别点。累计 3 人举报会自动下架。')) return;
     b.disabled = true;
     try {
-      const { error } = await db.rpc('item_report', { p_id: id });
-      if (error) throw error;
+      await api('/api/items/' + id + '/report', { method: 'POST', body: '{}' });
       toast('已举报，管理员会处理');
     } catch (err) { toast(err.message || '举报失败'); }
     finally { b.disabled = false; }
@@ -801,10 +767,10 @@ listEl.addEventListener('click', async (e) => {
     if (!confirm('管理员操作：删除这条信息？')) return;
     b.disabled = true;
     try {
-      const { data, error } = await db.rpc('admin_delete', { p_id: id, p_account: adminAuth.account, p_password: adminAuth.password });
-      if (error) throw error;
-      if (!data) throw new Error('管理员账号或密码不对，请重新登录');
-      if (it && it.image) await removeImage(it.image);
+      await api('/api/admin/delete', {
+        method: 'POST',
+        body: JSON.stringify({ id, account: adminAuth.account, password: adminAuth.password })
+      });
       toast('已删除');
       await load();
     } catch (err) { toast(err.message || '删除失败'); }
@@ -816,17 +782,15 @@ listEl.addEventListener('click', async (e) => {
   b.disabled = true;
   try {
     if (act === 'done' || act === 'open') {
-      const { data, error } = await db.rpc('item_set_status', { p_id: id, p_status: act === 'done' ? 'done' : 'open' });
-      if (error) throw error;
-      if (!data) throw new Error('只有发布者本人才能修改这条信息');
+      await api('/api/items/' + id + '/status', {
+        method: 'POST',
+        body: JSON.stringify({ status: act === 'done' ? 'done' : 'open' })
+      });
       toast(act === 'done' ? '已标记完成 ✅' : '已重新开启');
       await load();
     }
     if (act === 'del') {
-      const { data, error } = await db.rpc('item_delete', { p_id: id });
-      if (error) throw error;
-      if (!data) throw new Error('只有发布者本人才能删除这条信息');
-      if (it && it.image) await removeImage(it.image);
+      await api('/api/items/' + id, { method: 'DELETE' });
       toast('已删除');
       await load();
     }
@@ -834,7 +798,6 @@ listEl.addEventListener('click', async (e) => {
   finally { b.disabled = false; }
 });
 
-/* ---------- 认领 ---------- */
 function openClaim(id) {
   const it = items.find((x) => x.id === id);
   if (!it) return;
@@ -853,7 +816,6 @@ function openClaim(id) {
   if (it.needsAnswer) setTimeout(() => ans.focus(), 100);
 }
 
-/* ---------- 管理员 ---------- */
 function openAdmin() {
   if (adminAuth) {
     if (confirm('退出管理模式？')) { clearAdmin(); toast('已退出管理模式'); }
@@ -882,11 +844,9 @@ $('#mOk').addEventListener('click', async () => {
       const account = $('#mAnswer').value.trim();
       const password = $('#mAnswer2').value;
       if (!account || !password) throw new Error('请填账号和密码');
-      if (!currentUser) throw new Error('请先登录');
-      const { data, error } = await db.rpc('admin_check', { p_account: account, p_password: password });
-      if (error) throw error;
-      if (!data) throw new Error('管理员账号或密码不对');
-      adminAuth = { account, password, uid: currentUser.id };
+      const r = await api('/api/admin/check', { method: 'POST', body: JSON.stringify({ account, password }) });
+      if (!r.ok) throw new Error('管理员账号或密码不对');
+      adminAuth = { account, password };
       sessionStorage.setItem('admin_auth', JSON.stringify(adminAuth));
       document.body.classList.add('admin-on');
       $('#adminBtn').textContent = '管理员模式（点此退出）';
@@ -902,13 +862,15 @@ $('#mOk').addEventListener('click', async () => {
   if (!curClaimId) return;
   b.disabled = true; b.textContent = '验证中…';
   try {
-    const { data, error } = await db.rpc('item_claim', { p_id: curClaimId, p_answer: $('#mAnswer').value });
-    if (error) throw error;
-    if (!data || !data.ok) throw new Error((data && data.msg) || '验证没通过');
+    const r = await api('/api/items/' + curClaimId + '/claim', {
+      method: 'POST',
+      body: JSON.stringify({ answer: $('#mAnswer').value })
+    });
+    if (!r.ok) throw new Error(r.msg || '验证没通过');
     $('#mAnswer').classList.add('hide');
     b.classList.add('hide');
     $('#mSub').textContent = '验证通过 ✅ 这是对方的联系方式';
-    const c = String(data.contact || '');
+    const c = String(r.contact || '');
     $('#mContact').innerHTML = '<div class="contact-num">' + esc(c || '对方没留联系方式') + '</div>'
       + (c ? '<button class="ghost" id="copyBtn" style="margin-bottom:12px">复制</button>' : '');
     if (c) {
@@ -921,21 +883,21 @@ $('#mOk').addEventListener('click', async () => {
   finally { b.disabled = false; b.textContent = '确认'; }
 });
 
-/* ---------- 举报记录 ---------- */
 async function openReports() {
   if (!adminAuth) return toast('请先进入管理模式');
   $('#repList').innerHTML = '<div class="empty" style="padding:20px">加载中…</div>';
   $('#repModal').classList.remove('hide');
   try {
-    const { data, error } = await db.rpc('admin_reports', { p_account: adminAuth.account, p_password: adminAuth.password });
-    if (error) throw error;
-    if (!data) throw new Error('管理员账号或密码不对');
+    const data = await api('/api/admin/reports', {
+      method: 'POST',
+      body: JSON.stringify({ account: adminAuth.account, password: adminAuth.password })
+    });
     if (!data.length) { $('#repList').innerHTML = '<div class="empty" style="padding:20px">还没有人举报 ✅</div>'; return; }
     $('#repList').innerHTML = data.map((r) => (
       '<div class="rep-item"><b>' + esc(r.title) + '</b>'
       + '<div class="rep-meta">👤 ' + esc(r.owner_name || '同学') + ' · 被举报 ' + (r.report_count || 0) + ' 次 · 状态：'
       + (r.status === 'hidden' ? '已自动隐藏' : r.status === 'done' ? '已完成' : '显示中') + '</div>'
-      + '<button class="danger" data-rep-del="' + r.id + '" data-img="' + esc(r.image_url || '') + '">删除这条</button>'
+      + '<button class="danger" data-rep-del="' + r.id + '">删除这条</button>'
       + '<button data-rep-clear="' + r.id + '">忽略举报</button></div>'
     )).join('');
   } catch (err) { $('#repList').innerHTML = '<div class="empty" style="padding:20px">' + esc(err.message) + '</div>'; }
@@ -952,16 +914,16 @@ $('#repList').addEventListener('click', async (e) => {
   try {
     if (del) {
       if (!confirm('删除这条被举报的信息？')) return;
-      const img = del.dataset.img || '';
-      const { data, error } = await db.rpc('admin_delete', { p_id: id, p_account: adminAuth.account, p_password: adminAuth.password });
-      if (error) throw error;
-      if (!data) throw new Error('操作失败');
-      if (img) await removeImage(img);
+      await api('/api/admin/delete', {
+        method: 'POST',
+        body: JSON.stringify({ id, account: adminAuth.account, password: adminAuth.password })
+      });
       toast('已删除');
     } else {
-      const { data, error } = await db.rpc('admin_clear_reports', { p_id: id, p_account: adminAuth.account, p_password: adminAuth.password });
-      if (error) throw error;
-      if (!data) throw new Error('操作失败');
+      await api('/api/admin/clear-reports', {
+        method: 'POST',
+        body: JSON.stringify({ id, account: adminAuth.account, password: adminAuth.password })
+      });
       toast('已忽略举报');
     }
     await load(); openReports();
