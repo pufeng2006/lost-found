@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>校园失物招领</title>
 <meta name="description" content="校园失物招领：登录后发布失物信息，输关键词马上找到。">
 <style>
@@ -11,9 +11,11 @@
     --line:#e5e7eb; --brand:#2563eb; --lost:#ef4444; --found:#10b981;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   body{
     margin:0;background:var(--bg);color:var(--ink);
     font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    touch-action:manipulation;
   }
   .wrap{max-width:680px;margin:0 auto;padding:16px 14px 70px}
   h1{font-size:22px;margin:4px 0 6px}
@@ -287,6 +289,11 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const ACCOUNT_DOMAIN = '@campus-lost.app';
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+/* ===== 手机防缩放 ===== */
+document.addEventListener('gesturestart', function (e) { e.preventDefault(); }, { passive: false });
+document.addEventListener('gesturechange', function (e) { e.preventDefault(); }, { passive: false });
+document.addEventListener('gestureend', function (e) { e.preventDefault(); }, { passive: false });
+
 const CATEGORIES = ['证件卡类','电子产品','钥匙','书包钱包','衣物鞋帽','书籍资料','雨伞','水杯','眼镜','其他'];
 const OLD_DAYS = 30;
 const POST_LIMIT = 3;
@@ -397,16 +404,12 @@ function markPosted() {
   localStorage.setItem('recent_posts', JSON.stringify(list));
 }
 
-/* ---------- 管理员状态 ---------- */
 function clearAdmin() {
   adminAuth = null;
   try { sessionStorage.removeItem('admin_auth'); } catch (e) {}
   document.body.classList.remove('admin-on');
   const btn = $('#adminBtn');
   if (btn) btn.textContent = '管理入口';
-}
-function isAdminUser(user) {
-  return !!(adminAuth && adminAuth.uid && user && adminAuth.uid === user.id);
 }
 
 const ADJ = ['安静的','热心的','勤劳的','快乐的','认真的','勇敢的','细心的','低调的','闪亮的','温柔的','爱喝奶茶的','爱睡觉的'];
@@ -426,7 +429,6 @@ function enterApp(user) {
   if (currentUser && currentUser.id === user.id &&
       !$('#appView').classList.contains('hide')) return;
 
-  // 换了账号就自动退出管理员模式
   if (adminAuth && adminAuth.uid !== user.id) clearAdmin();
 
   currentUser = user;
@@ -524,7 +526,7 @@ $('#regForm').addEventListener('submit', async (e) => {
 });
 
 $('#logoutBtn').addEventListener('click', async () => {
-  clearAdmin();                    // 退出时清掉管理员状态
+  clearAdmin();
   await db.auth.signOut();
   toast('已退出登录');
 });
@@ -921,8 +923,6 @@ $('#mOk').addEventListener('click', async () => {
       });
       if (error) throw error;
       if (!data) throw new Error('管理员账号或密码不对');
-
-      // 绑定当前登录账号，换人自动失效
       adminAuth = { account, password, uid: currentUser.id };
       sessionStorage.setItem('admin_auth', JSON.stringify(adminAuth));
       document.body.classList.add('admin-on');
@@ -970,11 +970,9 @@ $('#mOk').addEventListener('click', async () => {
   }
 });
 
-/* ---------- 启动 ---------- */
 if (adminAuth) {
-  const u = (function () {
-    return null;
-  })();
+  document.body.classList.add('admin-on');
+  $('#adminBtn').textContent = '管理员模式（点此退出）';
 }
 renderCats();
 render();
