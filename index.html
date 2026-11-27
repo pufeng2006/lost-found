@@ -3,15 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>校园失物招领</title>
+<title>校园服务</title>
 <style>
   :root{--bg:#f5f7fa;--card:#fff;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--brand:#2563eb;--lost:#ef4444;--found:#10b981}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;touch-action:manipulation}
   .wrap{max-width:680px;margin:0 auto;padding:16px 14px 70px}
-  h1{font-size:22px;margin:4px 0 6px}
-  .head{display:flex;align-items:baseline;gap:8px}
+  h1{font-size:20px;margin:4px 0 6px}
+  .head{display:flex;align-items:center;gap:8px}
+  .backbtn{background:none;border:0;color:var(--brand);font-size:13px;font-family:inherit;padding:0;cursor:pointer}
   .stat{font-size:12px;color:var(--muted);margin-left:auto}
   .stats-line{font-size:12px;color:var(--muted);margin:0 0 10px;line-height:1.5}
   .searchbox{position:relative;margin-bottom:8px}
@@ -29,8 +30,9 @@
   .item.done{opacity:.6}
   .item .top{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
   .tag{font-size:11px;padding:3px 8px;border-radius:8px;color:#fff}
-  .tag.lost{background:var(--lost)}.tag.found{background:var(--found)}.tag.ok{background:#9ca3af}.tag.old{background:#f59e0b}
+  .tag.lost{background:var(--lost)}.tag.found{background:var(--found)}.tag.ok{background:#9ca3af}.tag.old{background:#f59e0b}.tag.market{background:#8b5cf6}
   .cat{font-size:11px;padding:3px 8px;border-radius:8px;background:#eef2ff;color:#4338ca}
+  .price{color:var(--lost);font-weight:700;font-size:14px;margin-left:auto}
   .item h3{margin:2px 0 6px;font-size:16px;line-height:1.4;word-break:break-word}
   .item .desc{margin:0 0 8px;font-size:13px;color:#4b5563;line-height:1.6;white-space:pre-wrap;word-break:break-word}
   .item img{width:100%;max-height:160px;object-fit:cover;border-radius:10px;margin:4px 0 10px;display:block;background:#f3f4f6}
@@ -88,6 +90,18 @@
   .userbar button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 10px;font-size:12px;color:#6b7280;cursor:pointer;font-family:inherit}
   .owner{color:#9ca3af}
   .sec-hint{font-size:11px;color:#9ca3af;margin:-6px 0 10px;line-height:1.5}
+  .home-wrap{max-width:390px;margin:0 auto;padding:56px 20px 40px}
+  .home-title{font-size:26px;text-align:center;margin:0 0 6px}
+  .home-sub{text-align:center;color:var(--muted);font-size:13px;margin:0 0 22px}
+  .home-stats{text-align:center;font-size:12px;color:var(--muted);margin-bottom:20px}
+  .home-btn{display:flex;align-items:center;gap:14px;width:100%;padding:20px 18px;margin-bottom:14px;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.04);cursor:pointer;text-align:left;font-family:inherit}
+  .home-icon{font-size:30px}
+  .home-text{flex:1}
+  .home-text b{display:block;font-size:17px;margin-bottom:3px;color:var(--ink)}
+  .home-text small{color:var(--muted);font-size:12px;line-height:1.4}
+  .home-arrow{color:#cbd5e1;font-size:24px}
+  .home-tip{text-align:center;font-size:12px;color:var(--muted);margin-top:24px}
+  .home-tip button{background:none;border:0;color:var(--muted);text-decoration:underline;font-size:12px;font-family:inherit;padding:0}
 </style>
 </head>
 <body>
@@ -95,8 +109,8 @@
 <div id="authView">
   <div class="auth-wrap">
     <div class="auth-card">
-      <h1>🎒 校园失物招领</h1>
-      <p class="auth-sub">登录后即可发布和认领</p>
+      <h1>🎒 校园服务</h1>
+      <p class="auth-sub">登录后即可使用</p>
       <div class="tabs">
         <button class="tab on" data-tab="login" type="button">登录</button>
         <button class="tab" data-tab="reg" type="button">注册</button>
@@ -124,13 +138,41 @@
   </div>
 </div>
 
+<div id="homeView" class="hide">
+  <div class="home-wrap">
+    <h1 class="home-title">校园服务</h1>
+    <p class="home-sub">你想做什么？</p>
+    <div class="home-stats" id="homeStats">统计加载中…</div>
+
+    <button class="home-btn" data-go="lost" type="button">
+      <span class="home-icon">🎒</span>
+      <span class="home-text">
+        <b>失物招领</b>
+        <small>丢了东西发布，捡到东西认领</small>
+      </span>
+      <span class="home-arrow">›</span>
+    </button>
+
+    <button class="home-btn" data-go="market" type="button">
+      <span class="home-icon">🛒</span>
+      <span class="home-text">
+        <b>校园闲置</b>
+        <small>发布和查看二手物品</small>
+      </span>
+      <span class="home-arrow">›</span>
+    </button>
+
+    <p class="home-tip">👋 <span id="homeNick">同学</span> · <button id="homeLogout" type="button">退出登录</button></p>
+  </div>
+</div>
+
 <div id="appView" class="hide">
   <div class="wrap">
     <div class="head">
-      <h1>🎒 校园失物招领</h1>
+      <button id="backHome" class="backbtn" type="button">‹ 首页</button>
+      <h1 id="moduleTitle">🎒 失物招领</h1>
       <span class="stat" id="stat"></span>
     </div>
-    <div class="stats-line" id="statsLine">统计加载中…</div>
     <div class="userbar">
       <span>👋 <b id="nickName">同学</b></span>
       <button id="logoutBtn" type="button">退出登录</button>
@@ -149,7 +191,7 @@
     <button class="primary" id="toggleForm">＋ 发布信息</button>
 
     <form class="card form hide" id="form">
-      <div class="field">
+      <div class="field" id="typeWrap">
         <label>情况</label>
         <div class="chips" id="typePick">
           <button type="button" class="chip sm on" data-t="lost">我丢了，求归还</button>
@@ -169,6 +211,10 @@
           <label>地点</label>
           <input name="place" maxlength="60" placeholder="如：图书馆 3 楼">
         </div>
+      </div>
+      <div class="field" id="priceField">
+        <label>价格（元）</label>
+        <input name="price" type="number" min="0" step="0.01" placeholder="如：35">
       </div>
       <div class="field">
         <label>日期</label>
@@ -260,7 +306,7 @@ document.addEventListener('gesturestart', function (e) { e.preventDefault(); }, 
 document.addEventListener('gesturechange', function (e) { e.preventDefault(); }, { passive: false });
 document.addEventListener('gestureend', function (e) { e.preventDefault(); }, { passive: false });
 
-const CATEGORIES = ['证件卡类','电子产品','钥匙','书包钱包','衣物鞋帽','书籍资料','雨伞','水杯','眼镜','其他'];
+const CATEGORIES = ['证件卡类','电子产品','钥匙','书包钱包','衣物鞋帽','书籍资料','雨伞','水杯','眼镜','服装鞋包','数码配件','生活用品','其他'];
 const OLD_DAYS = 30;
 
 const RULES = [
@@ -276,6 +322,7 @@ const RULES = [
 ];
 
 let currentUser = null;
+let currentModule = 'lost';
 let items = [];
 let typeFilter = '';
 let catFilter = '';
@@ -287,7 +334,6 @@ let modalMode = 'claim';
 let adminAuth = null;
 let editingId = null;
 let fgStep = 1;
-let statsTimer = null;
 try { adminAuth = JSON.parse(sessionStorage.getItem('admin_auth') || 'null'); } catch (e) { adminAuth = null; }
 
 const $ = (s) => document.querySelector(s);
@@ -379,7 +425,9 @@ async function uploadImage(file) {
 async function loadStats() {
   try {
     const s = await api('/api/stats');
-    $('#statsLine').textContent = '👥 已注册 ' + (s.users || 0) + ' 人 · 🟢 在线 ' + (s.online || 0) + ' 人';
+    const txt = '👥 已注册 ' + (s.users || 0) + ' 人 · 🟢 在线 ' + (s.online || 0) + ' 人';
+    if ($('#homeStats')) $('#homeStats').textContent = txt;
+    if ($('#statsLine')) $('#statsLine').textContent = txt;
   } catch (e) {}
 }
 function clearAdmin() {
@@ -388,7 +436,7 @@ function clearAdmin() {
   document.body.classList.remove('admin-on');
   if ($('#adminBtn')) $('#adminBtn').textContent = '管理入口';
   if ($('#reportsBtn')) $('#reportsBtn').classList.add('hide');
-  applyFilter();
+  if (!$('#appView').classList.contains('hide')) applyFilter();
 }
 
 const ADJ = ['安静的','热心的','勤劳的','快乐的','认真的','勇敢的','细心的','低调的','闪亮的','温柔的','爱喝奶茶的','爱睡觉的'];
@@ -398,24 +446,66 @@ function randomNick() {
   const n = NOUN[Math.floor(Math.random() * NOUN.length)];
   return a + n + Math.floor(1000 + Math.random() * 9000);
 }
+
 function showAuth() {
   $('#appView').classList.add('hide');
+  $('#homeView').classList.add('hide');
   $('#authView').classList.remove('hide');
   items = [];
   listEl.innerHTML = '';
-  if (statsTimer) { clearInterval(statsTimer); statsTimer = null; }
+}
+function showHome() {
+  $('#authView').classList.add('hide');
+  $('#appView').classList.add('hide');
+  $('#homeView').classList.remove('hide');
+  if (currentUser) $('#homeNick').textContent = currentUser.nickname || currentUser.account;
+  loadStats();
 }
 function enterApp(user) {
   currentUser = user;
   localStorage.setItem('lf_user', JSON.stringify(user));
-  $('#authView').classList.add('hide');
-  $('#appView').classList.remove('hide');
-  $('#nickName').textContent = user.nickname || user.account;
+  showHome();
+}
+
+function resetFilters() {
+  typeFilter = ''; catFilter = ''; onlyMine = false;
+  qEl.value = '';
+  hintEl.textContent = '';
+  [...$('#typeChips').children].forEach((x, i) => x.classList.toggle('on', i === 0));
   renderCats();
+}
+function enterModule(mod) {
+  currentModule = mod === 'market' ? 'market' : 'lost';
+  $('#homeView').classList.add('hide');
+  $('#appView').classList.remove('hide');
+  $('#moduleTitle').textContent = currentModule === 'market' ? '🛒 校园闲置' : '🎒 失物招领';
+  $('#typeWrap').classList.toggle('hide', currentModule === 'market');
+  $('#priceField').classList.toggle('hide', currentModule !== 'market');
+  $('#toggleForm').textContent = currentModule === 'market' ? '＋ 发布闲置' : '＋ 发布信息';
+  resetFilters();
+  resetForm();
   load();
-  loadStats();
-  if (statsTimer) clearInterval(statsTimer);
-  statsTimer = setInterval(loadStats, 60000);
+}
+function leaveModule() {
+  $('#appView').classList.add('hide');
+  showHome();
+}
+
+document.querySelectorAll('[data-go]').forEach((btn) => {
+  btn.addEventListener('click', () => enterModule(btn.dataset.go));
+});
+$('#backHome').addEventListener('click', leaveModule);
+$('#homeLogout').addEventListener('click', doLogout);
+$('#logoutBtn').addEventListener('click', doLogout);
+
+async function doLogout() {
+  clearAdmin();
+  try { await api('/api/logout', { method: 'POST' }); } catch (e) {}
+  localStorage.removeItem('lf_token');
+  localStorage.removeItem('lf_user');
+  currentUser = null;
+  showAuth();
+  toast('已退出登录');
 }
 
 document.querySelectorAll('.tab').forEach((t) => {
@@ -476,16 +566,6 @@ $('#regForm').addEventListener('submit', async (e) => {
   finally { btn.disabled = false; btn.textContent = '注册并登录'; }
 });
 
-$('#logoutBtn').addEventListener('click', async () => {
-  clearAdmin();
-  try { await api('/api/logout', { method: 'POST' }); } catch (e) {}
-  localStorage.removeItem('lf_token');
-  localStorage.removeItem('lf_user');
-  currentUser = null;
-  showAuth();
-  toast('已退出登录');
-});
-
 (async function boot() {
   const token = localStorage.getItem('lf_token');
   const raw = localStorage.getItem('lf_user');
@@ -495,7 +575,7 @@ $('#logoutBtn').addEventListener('click', async () => {
       enterApp(u);
       const me = await api('/api/me');
       currentUser = me.user;
-      $('#nickName').textContent = me.user.nickname || me.user.account;
+      $('#homeNick').textContent = me.user.nickname || me.user.account;
     } catch (e) {}
   }
 })();
@@ -568,25 +648,31 @@ function matchItem(it, tokens, guess) {
 function cardHtml(it) {
   const mine = it.isMine;
   const done = it.status === 'done';
+  const isMarket = it.module === 'market';
   const old = !done && (Date.now() - it.createdAt) > OLD_DAYS * 86400000;
-  const tag = it.type === 'found' ? '<span class="tag found">拾获</span>' : '<span class="tag lost">丢失</span>';
+  const tag = isMarket
+    ? '<span class="tag market">二手</span>'
+    : (it.type === 'found' ? '<span class="tag found">拾获</span>' : '<span class="tag lost">丢失</span>');
+  const price = isMarket && it.price ? '<span class="price">¥' + esc(it.price) + '</span>' : '';
+
   let btns = '';
   if (mine) {
     btns = '<button data-act="' + (done ? 'open' : 'done') + '" data-id="' + it.id + '">'
-             + (done ? '重新开启' : '✓ 已处理完') + '</button>'
+             + (done ? '重新上架' : (isMarket ? '✓ 已售出' : '✓ 已处理完')) + '</button>'
          + '<button data-act="edit" data-id="' + it.id + '">编辑</button>'
          + '<button class="danger" data-act="del" data-id="' + it.id + '">删除</button>';
   } else {
     btns = '<button class="main" data-act="claim" data-id="' + it.id + '">'
-             + (it.needsAnswer ? '我要认领' : '看联系方式') + '</button>'
+             + (isMarket ? '联系 TA' : (it.needsAnswer ? '我要认领' : '看联系方式')) + '</button>'
          + '<button class="tiny" data-act="report" data-id="' + it.id + '">举报</button>';
   }
   if (adminAuth) btns += '<button class="danger" data-act="adm_del" data-id="' + it.id + '">管理员删除</button>';
 
   return '<article class="card item ' + (done ? 'done' : '') + (old ? ' old' : '') + '" data-id="' + esc(it.id) + '">'
     + '<div class="top">' + tag + '<span class="cat">' + esc(it.category) + '</span>'
-    + (done ? '<span class="tag ok">已完成</span>' : '')
+    + (done ? '<span class="tag ok">' + (isMarket ? '已售出' : '已完成') + '</span>' : '')
     + (old ? '<span class="tag old">超过 ' + OLD_DAYS + ' 天</span>' : '')
+    + price
     + '</div><h3>' + hl(it.title) + '</h3>'
     + (it.image ? '<img src="' + esc(it.image) + '" alt="物品照片" loading="lazy" decoding="async">' : '')
     + (it.desc ? '<p class="desc">' + hl(it.desc) + '</p>' : '')
@@ -625,7 +711,9 @@ function applyFilter() {
     if (!emptyEl) {
       emptyEl = document.createElement('div');
       emptyEl.className = 'empty';
-      emptyEl.textContent = items.length ? '没有匹配的信息，换个关键词试试 🙈' : '还没有人发布，点上面「发布信息」发第一条吧 👆';
+      emptyEl.textContent = items.length
+        ? '没有匹配的信息，换个关键词试试 🙈'
+        : (currentModule === 'market' ? '还没有人发布闲置，点上面「发布闲置」发第一条吧 👆' : '还没有人发布，点上面「发布信息」发第一条吧 👆');
       listEl.appendChild(emptyEl);
     }
     emptyEl.style.display = '';
@@ -633,7 +721,7 @@ function applyFilter() {
     emptyEl.style.display = 'none';
   }
 
-  $('#stat').textContent = '待认领 ' + items.filter((x) => x.status === 'open').length + ' 条';
+  $('#stat').textContent = '在售 ' + items.filter((x) => x.status === 'open').length + ' 条';
   $('#count').textContent = onlyMine
     ? '我的发布 ' + visible + ' 条'
     : (tokens.length ? '找到 ' + visible + ' 条' : '共 ' + visible + ' 条信息');
@@ -642,13 +730,14 @@ function applyFilter() {
 async function load() {
   if (!currentUser) return;
   try {
-    const data = await api('/api/items');
+    const data = await api('/api/items?module=' + currentModule);
     items = (data || []).map((r) => ({
       id: r.id, ownerName: r.ownerName || '', title: r.title, type: r.type,
       category: r.category || '其他', place: r.place || '', time: r.time || '',
       desc: r.desc || '', image: r.image || '', claimQuestion: r.claimQuestion || '',
       needsAnswer: !!r.needsAnswer, isMine: !!r.isMine, reports: r.reports || 0,
-      status: r.status, createdAt: r.createdAt || 0
+      status: r.status, createdAt: r.createdAt || 0,
+      module: r.module || 'lost', price: r.price || ''
     }));
     render();
   } catch (e) {
@@ -690,7 +779,7 @@ function resetForm() {
   $('#claimFields').classList.add('hide');
   pickType = 'lost'; editingId = null;
   [...$('#typePick').children].forEach((x, i) => x.classList.toggle('on', i === 0));
-  form.querySelector('button[type=submit]').textContent = '发布';
+  form.querySelector('button[type=submit]').textContent = currentModule === 'market' ? '发布闲置' : '发布';
 }
 $('#toggleForm').addEventListener('click', () => {
   if (!form.classList.contains('hide') && editingId) { resetForm(); return; }
@@ -709,10 +798,14 @@ $('#typePick').addEventListener('click', (e) => {
   [...$('#typePick').children].forEach((x) => x.classList.toggle('on', x === b));
   $('#claimFields').classList.toggle('hide', pickType !== 'found');
 });
+
 function openEdit(id) {
   const it = items.find((x) => x.id === id);
   if (!it) return;
   editingId = id;
+  const isMarket = it.module === 'market';
+  $('#typeWrap').classList.toggle('hide', isMarket);
+  $('#priceField').classList.toggle('hide', !isMarket);
   form.classList.remove('hide');
   form.querySelector('[name=title]').value = it.title;
   form.querySelector('[name=category]').value = it.category;
@@ -720,6 +813,7 @@ function openEdit(id) {
   form.querySelector('[name=time]').value = it.time;
   form.querySelector('[name=desc]').value = it.desc;
   form.querySelector('[name=contact]').value = it.contact || '';
+  form.querySelector('[name=price]').value = it.price || '';
   form.querySelector('[name=image]').value = '';
   pickType = it.type;
   [...$('#typePick').children].forEach((x) => x.classList.toggle('on', x.dataset.t === it.type));
@@ -735,12 +829,14 @@ form.addEventListener('submit', async (e) => {
   const btn = form.querySelector('button[type=submit]');
   const isEditing = !!editingId;
   btn.disabled = true;
-  btn.textContent = isEditing ? '保存中…' : '发布中…';
+  btn.textContent = isEditing ? '保存中…' : (currentModule === 'market' ? '发布中…' : '发布中…');
   try {
     const title = form.querySelector('[name=title]').value.trim();
     if (!title) throw new Error('请填写物品名称');
     const contact = form.querySelector('[name=contact]').value.trim();
     if (!contact) throw new Error('请留下联系方式，不然别人找到也没法还你');
+    const price = currentModule === 'market' ? form.querySelector('[name=price]').value.trim() : '';
+    if (currentModule === 'market' && !price) throw new Error('请填写价格');
 
     const old = isEditing ? items.find((x) => x.id === editingId) : null;
     let imageUrl = old ? old.image : '';
@@ -754,15 +850,16 @@ form.addEventListener('submit', async (e) => {
     }
 
     const payload = {
+      module: currentModule,
       title,
-      type: pickType,
+      type: currentModule === 'market' ? 'sell' : pickType,
       category: form.querySelector('[name=category]').value,
       place: form.querySelector('[name=place]').value.trim(),
       happenedOn: form.querySelector('[name=time]').value,
       description: form.querySelector('[name=desc]').value.trim(),
-      contact, imageUrl, imageKey,
-      claimQuestion: pickType === 'found' ? form.querySelector('[name=q]').value.trim() : '',
-      claimAnswer: pickType === 'found' ? form.querySelector('[name=a]').value.trim() : ''
+      contact, imageUrl, imageKey, price,
+      claimQuestion: (currentModule === 'lost' && pickType === 'found') ? form.querySelector('[name=q]').value.trim() : '',
+      claimAnswer: (currentModule === 'lost' && pickType === 'found') ? form.querySelector('[name=a]').value.trim() : ''
     };
 
     if (isEditing) {
@@ -775,10 +872,10 @@ form.addEventListener('submit', async (e) => {
 
     await api('/api/items', { method: 'POST', body: JSON.stringify(payload) });
     resetForm();
-    toast('发布成功 🎉');
+    toast(currentModule === 'market' ? '发布成功 🛒' : '发布成功 🎉');
     await load();
   } catch (err) { toast(err.message || '操作失败'); }
-  finally { btn.disabled = false; btn.textContent = editingId ? '保存修改' : '发布'; }
+  finally { btn.disabled = false; btn.textContent = editingId ? '保存修改' : (currentModule === 'market' ? '发布闲置' : '发布'); }
 });
 
 listEl.addEventListener('click', async (e) => {
@@ -823,7 +920,7 @@ listEl.addEventListener('click', async (e) => {
         method: 'POST',
         body: JSON.stringify({ status: act === 'done' ? 'done' : 'open' })
       });
-      toast(act === 'done' ? '已标记完成 ✅' : '已重新开启');
+      toast(act === 'done' ? (currentModule === 'market' ? '已标记售出 ✅' : '已标记完成 ✅') : '已重新上架');
       await load();
     }
     if (act === 'del') {
@@ -841,8 +938,11 @@ function openClaim(id) {
   if (it.isMine) return toast('这是你自己发的');
   curClaimId = id;
   modalMode = 'claim';
-  $('#mTitle').textContent = it.type === 'found' ? '认领这件物品' : '联系发布者';
-  $('#mSub').textContent = it.needsAnswer ? '请回答发布者设的问题：\n' + it.claimQuestion : '提示：先确认好物品特征，避免误认。';
+  const isMarket = it.module === 'market';
+  $('#mTitle').textContent = isMarket ? '联系卖家' : (it.type === 'found' ? '认领这件物品' : '联系发布者');
+  $('#mSub').textContent = it.needsAnswer
+    ? '请回答发布者设的问题：\n' + it.claimQuestion
+    : (isMarket ? '确认后显示卖家联系方式' : '提示：先确认好物品特征，避免误认。');
   const ans = $('#mAnswer');
   ans.value = ''; ans.type = 'text'; ans.placeholder = '请输入答案';
   ans.classList.toggle('hide', !it.needsAnswer);
@@ -932,7 +1032,7 @@ async function openReports() {
     if (!data.length) { $('#repList').innerHTML = '<div class="empty" style="padding:20px">还没有人举报 ✅</div>'; return; }
     $('#repList').innerHTML = data.map((r) => (
       '<div class="rep-item"><b>' + esc(r.title) + '</b>'
-      + '<div class="rep-meta">👤 ' + esc(r.owner_name || '同学') + ' · 被举报 ' + (r.report_count || 0) + ' 次 · 状态：'
+      + '<div class="rep-meta">' + (r.module === 'market' ? '🛒 二手' : '🎒 失物') + ' · 👤 ' + esc(r.owner_name || '同学') + ' · 被举报 ' + (r.report_count || 0) + ' 次 · 状态：'
       + (r.status === 'hidden' ? '已自动隐藏' : r.status === 'done' ? '已完成' : '显示中') + '</div>'
       + '<button class="danger" data-rep-del="' + r.id + '">删除这条</button>'
       + '<button data-rep-clear="' + r.id + '">忽略举报</button></div>'
@@ -973,7 +1073,6 @@ if (adminAuth) {
   $('#reportsBtn').classList.remove('hide');
 }
 renderCats();
-render();
 </script>
 </body>
 </html>
