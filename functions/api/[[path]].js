@@ -64,7 +64,8 @@ export async function onRequest(context) {
   const request = context.request;
   const env = context.env;
   if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
-  const p = new URL(request.url).pathname.replace(/^\/api/, '');
+  const url = new URL(request.url);
+  const p = url.pathname.replace(/^\/api/, '');
   try {
     if (p === '/health') return json({ ok: true, time: new Date().toISOString() });
 
@@ -133,26 +134,32 @@ export async function onRequest(context) {
       return json({ user });
     }
 
+    /* ---------- 列表（按模块） ---------- */
     if (p === '/items' && request.method === 'GET') {
       const user = await getUser(request, env);
       if (!user) return bad('请先登录', 401);
       await touch(env, user.id);
+      const module = url.searchParams.get('module') === 'market' ? 'market' : 'lost';
       const rows = await env.DB.prepare(
         `select id, owner_id, owner_name, title, type, category, place, happened_on,
-                description, image_url, claim_question, status, report_count, created_at
-         from items where status <> 'hidden' order by created_at desc limit 300`
-      ).all();
+                description, image_url, claim_question, status, report_count, created_at,
+                module, price
+         from items where status <> 'hidden' and module = ?
+         order by created_at desc limit 300`
+      ).bind(module).all();
       const list = (rows.results || []).map((r) => ({
         id: r.id, ownerName: r.owner_name, title: r.title, type: r.type,
         category: r.category, place: r.place, time: r.happened_on,
         desc: r.description, image: r.image_url,
         claimQuestion: r.claim_question, needsAnswer: !!r.claim_question,
         isMine: r.owner_id === user.id, reports: r.report_count,
-        status: r.status, createdAt: r.created_at
+        status: r.status, createdAt: r.created_at,
+        module: r.module || 'lost', price: r.price || ''
       }));
       return json(list);
     }
 
+    /* ---------- 发布 ---------- */
     if (p === '/items' && request.method === 'POST') {
       const user = await getUser(request, env);
       if (!user) return bad('请先登录', 401);
@@ -167,15 +174,16 @@ export async function onRequest(context) {
       ).bind(user.id, Date.now() - 600000).first();
       if (recent && recent.c >= 3) return bad('发布太频繁了，请 10 分钟后再发');
 
+      const module = b.module === 'market' ? 'market' : 'lost';
       const id = crypto.randomUUID();
       await env.DB.prepare(
         `insert into items(id, owner_id, owner_name, title, type, category, place,
            happened_on, description, contact, image_url, image_key, claim_question,
-           claim_answer, status, report_count, created_at)
-         values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,'open',0,?)`
+           claim_answer, status, report_count, created_at, module, price)
+         values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,'open',0,?,?,?)`
       ).bind(
         id, user.id, user.nickname || user.account, title,
-        b.type === 'found' ? 'found' : 'lost',
+        module === 'market' ? 'sell' : (b.type === 'found' ? 'found' : 'lost'),
         String(b.category || '其他').slice(0, 20),
         String(b.place || '').slice(0, 60),
         String(b.happenedOn || '').slice(0, 20),
@@ -184,7 +192,9 @@ export async function onRequest(context) {
         String(b.imageUrl || ''), String(b.imageKey || ''),
         String(b.claimQuestion || '').slice(0, 80),
         String(b.claimAnswer || '').slice(0, 40),
-        Date.now()
+        Date.now(),
+        module,
+        String(b.price || '').slice(0, 20)
       ).run();
       await touch(env, user.id);
       return json({ id });
@@ -204,7 +214,7 @@ export async function onRequest(context) {
         const b = await request.json();
         await env.DB.prepare(
           `update items set title=?, category=?, place=?, happened_on=?, description=?,
-             contact=?, image_url=?, image_key=? where id=?`
+             contact=?, image_url=?, image_key=?, price=? where id=?`
         ).bind(
           String(b.title || item.title).slice(0, 60),
           String(b.category || item.category).slice(0, 20),
@@ -214,6 +224,7 @@ export async function onRequest(context) {
           String(b.contact || item.contact).slice(0, 80),
           b.imageUrl !== undefined ? String(b.imageUrl) : item.image_url,
           b.imageKey !== undefined ? String(b.imageKey) : item.image_key,
+          b.price !== undefined ? String(b.price).slice(0, 20) : item.price,
           id
         ).run();
         return json({ ok: true });
@@ -281,7 +292,7 @@ export async function onRequest(context) {
       const b = await request.json();
       if (!(await isAdmin(env, String(b.account || ''), String(b.password || '')))) return bad('管理员账号或密码不对', 403);
       const rows = await env.DB.prepare(
-        `select id, title, owner_name, report_count, status, image_url, image_key
+        `select id, title, owner_name, report_count, status, image_url, image_key, module
          from items where report_count > 0 order by report_count desc, created_at desc limit 100`
       ).all();
       return json(rows.results || []);
